@@ -5,165 +5,168 @@ import * as topojson from 'topojson'
 
 let d3 = Object.assign({}, d3B, d3geo);
 
-var svg = d3.select(".map-wrapper svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height"),
-    radius = d3.scaleSqrt().range([0, 45]).clamp(true),
-    randomizer = d3.randomNormal(0.5, 0.2),
-    color = d3.scaleLinear();
 
-
+let mapUrl = "<%= path %>/assets/world-simple.json";
+let dataUrl = "<%= path %>/assets/countrybyyear.json";
 
 Promise.all([
-    d3.json("../assets/us.json")])
+    d3.json(mapUrl),
+    d3.json(dataUrl)
+    ])
 .then(ready)
 
+let margin = {top: 0, right: 0, bottom: 0, left: 0},
+    width = 800 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom,
+    padding = 3;
 
-function ready(us)
+
+let projection = d3.geoMercator()
+.center([23.106111,53.5775])
+.scale(500)
+.translate([width / 2, height / 2]);
+
+let mapPath = d3.geoPath().projection(projection);
+
+
+
+let radius = d3.scaleSqrt()
+.domain([0, 52])
+.range([0, 22]);
+
+
+function ready(arr)
 {
-	var neighbors = topojson.neighbors(us[0].objects.states.geometries),
-      nodes = topojson.feature(us[0], us[0].objects.states).features;
+	let data = arr[1];
 
-  nodes.forEach(function(node, i) {
+	let data2018 = data.slice(data.length -1)[0];
 
-    var centroid = d3.geoPath().centroid(node);
+	let world = topojson.feature(arr[0], arr[0].objects.ne_10m_admin_0_map_subunits).features;
 
-    node.x0 = centroid[0];
-    node.y0 = centroid[1];
+	let europe = world.filter((country) => country.properties.continent == "Europe");
 
-    cleanUpGeometry(node);
+	let europeG = {type: "Topology", objects:{ne_10m_admin_0_map_subunits:{geometries:europe}}}
 
-  });
+	var neighbors = topojson.neighbors(arr[0].objects.ne_10m_admin_0_map_subunits.geometries);
 
-  var states = svg.selectAll("path")
-      .data(nodes)
-      .enter()
-      .append("path")
-      .attr("d", pathString)
-      .attr("fill", "#ccc");
 
-  simulate();
+	console.log(arr[0].objects.ne_10m_admin_0_map_subunits.geometries, europe)
 
-  function simulate() {
-    nodes.forEach(function(node) {
-      node.x = node.x0;
-      node.y = node.y0;
-      node.r = radius(randomizer());
-    });
 
-    color.domain(d3.extent(nodes, d => d.r));
+    
 
-    var links = d3.merge(neighbors.map(function(neighborSet, i) {
-      return neighborSet.filter(j => nodes[j]).map(function(j) {
-        return {source: i, target: j, distance: nodes[i].r + nodes[j].r + 3};
+	world.forEach(function(node){
+		node.x0 = d3.geoPath().centroid(node)[0];
+		node.y0 = d3.geoPath().centroid(node)[1];
+		node.value = getValue(node, data2018);
+		node.radius = Math.sqrt(node.value) * 2;
+		node.admin = node.properties.admin
+	})
+
+	var links = d3.merge(neighbors.map(function(neighborSet, i) {
+      return neighborSet.filter(j => world[j]).map(function(j) {
+        return {source: i, target: j, distance: world[i].radius + world[j].radius + 3};
       });
     }));
 
-    var simulation = d3.forceSimulation(nodes)
+	let svg = d3.select(".map-wrapper svg")
+
+	let map = svg.selectAll("path")
+    .data(world)
+    .enter()
+    .append("path")
+    .attr("d", mapPath)
+    .attr('class', (d) => {return d.properties.admin})
+    .attr('stroke', '#333333')
+    .attr('stroke-width', 0.5)
+    .attr('fill', "none")
+
+    let areas = svg.append('g')
+
+    let area = areas.selectAll("circle")
+    .data(world)
+    .enter()
+    .append('g')
+    .append('circle')
+    .attr('class', c =>{return c.admin})
+    .attr('r', c =>{return  c.radius})
+    .attr('cx', c => {return projection([c.x0, c.y0])[0]})
+    .attr('cy', c => {return projection([c.x0, c.y0])[1]})
+    .attr('stroke', '#333333')
+    .attr('stroke-width', 0.5)
+    .attr('fill', "#C70000");
+
+    let simulation = d3.forceSimulation(world)
         .force("cx", d3.forceX().x(d => width / 2).strength(0.02))
         .force("cy", d3.forceY().y(d => height / 2).strength(0.02))
         .force("link", d3.forceLink(links).distance(d => d.distance))
         .force("x", d3.forceX().x(d => d.x).strength(0.1))
         .force("y", d3.forceY().y(d => d.y).strength(0.1))
         .force("collide", d3.forceCollide().strength(0.8).radius(d => d.r + 3))
-        .stop();
+        .stop()
 
     while (simulation.alpha() > 0.1) {
-      simulation.tick();
+      console.log(simulation.alpha())
     }
 
-    nodes.forEach(function(node){
-      var circle = pseudocircle(node),
-          closestPoints = node.rings.slice(1).map(function(ring){
-            var i = d3.scan(circle.map(point => distance(point, ring.centroid)));
-            return ring.map(() => circle[i]);
-          }),
-          interpolator = d3.interpolateArray(node.rings, [circle, ...closestPoints]);
+        
 
-      node.interpolator = function(t){
-        var str = pathString(interpolator(t));
-        // Prevent some fill-rule flickering for MultiPolygons
-        if (t > 0.99) {
-          return str.split("Z")[0] + "Z";
-        }
-        return str;
-      };
-    });
+    function ticked() {
+    	console.log("aa")
+	  d3.selectAll("circle")
+      .attr("cx", d => {console.log(d); return d.x})
+      .attr("cy", d => d.y)
+	}
 
-    states
-      .sort((a, b) => b.r - a.r)
-      .transition()
-      .delay(1000)
-      .duration(1500)
-      .attrTween("d", node => node.interpolator)
-      .attr("fill", d => d3.interpolateSpectral(color(d.r)))
-      .transition()
-        .delay(1000)
-        .attrTween("d", node => t => node.interpolator(1 - t))
-        .attr("fill", "#ccc")
-        .on("end", (d, i) => i || simulate());
 
+
+
+
+}
+
+function updateCartogram() {
+    d3.selectAll("circle")
+      .attr("cx", d => projection([d.x, d.y][0]))
+      .attr("cy", d => projection([d.x, d.y][1]))
   }
+
+
+function getValue(node, data){
+
+	let country = data.countries.find(c => c.country == node.properties.admin);
+	let value = 0;
+
+	if(country)
+	{
+		value = country.totalPopulist.totalshare;
+	}
+	
+	return value
 }
 
 
 
-function pseudocircle(node) {
-  return node.rings[0].map(function(point){
-    var angle = node.startingAngle - 2 * Math.PI * (point.along / node.perimeter);
-    return [
-      Math.cos(angle) * node.r + node.x,
-      Math.sin(angle) * node.r + node.y
-    ];
-  });
-}
 
-function cleanUpGeometry(node) {
 
-  node.rings = (node.geometry.type === "Polygon" ? [node.geometry.coordinates] : node.geometry.coordinates);
 
-  node.rings = node.rings.map(function(polygon){
-    polygon[0].area = d3.polygonArea(polygon[0]);
-    polygon[0].centroid = d3.polygonCentroid(polygon[0]);
-    return polygon[0];
-  });
 
-  node.rings.sort((a, b) => b.area - a.area);
 
-  node.perimeter = d3.polygonLength(node.rings[0]);
 
-  // Optional step, but makes for more circular circles
-  bisect(node.rings[0], node.perimeter / 72);
 
-  node.rings[0].reduce(function(prev, point){
-    point.along = prev ? prev.along + distance(point, prev) : 0;
-    node.perimeter = point.along;
-    return point;
-  }, null);
 
-  node.startingAngle = Math.atan2(node.rings[0][0][1] - node.y0, node.rings[0][0][0] - node.x0);
 
-}
 
-function bisect(ring, maxSegmentLength) {
-  for (var i = 0; i < ring.length; i++) {
-    var a = ring[i], b = i === ring.length - 1 ? ring[0] : ring[i + 1];
 
-    while (distance(a, b) > maxSegmentLength) {
-      b = midpoint(a, b);
-      ring.splice(i + 1, 0, b);
-    }
-  }
-}
 
-function distance(a, b) {
-  return Math.sqrt((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]));
-}
 
-function midpoint(a, b) {
-  return [a[0] + (b[0] - a[0]) * 0.5, a[1] + (b[1] - a[1]) * 0.5];
-}
 
-function pathString(d) {
-  return (d.rings || d).map(ring => "M" + ring.join("L") + "Z").join(" ");
-}
+
+
+
+
+
+
+
+
+
+
