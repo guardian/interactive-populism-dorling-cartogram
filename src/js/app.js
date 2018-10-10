@@ -10,7 +10,7 @@ let europeURL = "<%= path %>/assets/europe.json";
 
 
 let width = 960
-let height = 600
+let height = 700
 
 let interval = 500
 let maxSize = 100
@@ -21,14 +21,14 @@ let year = years[0]
 
 let projection = d3.geoMercator()
 .center([23.106111,56.5775])
-.scale(500)
+.scale(400)
 .translate([width / 2, height / 2]);
 
 let path = d3.geoPath().projection(projection);
 
 let size = d3.scaleSqrt().range([0, maxSize])
 
-let svg = d3.select('body').append('svg')
+let svg = d3.select('.map-wrapper svg')
     .attr('width', width)
     .attr('height', height)
     .append('g')
@@ -132,18 +132,15 @@ function ready(arr)
         n.y = n.yi = coords[1]
     })
 
-     
-	let svg = d3.select(".map-wrapper svg")
 
-
-	svg.selectAll("path")
-       .data(topojson.feature(europeMap, europeMap.objects.europe).features)
-       .enter()
-       .append("path")
-       .attr("class", d => d.properties.name_long)
-       .attr("d", path)
-       .attr("fill", "none")
-       .attr("stroke", "#C70000");
+	// svg.selectAll("path")
+ //       .data(topojson.feature(europeMap, europeMap.objects.europe).features)
+ //       .enter()
+ //       .append("path")
+ //       .attr("class", d => d.properties.name_long)
+ //       .attr("d", path)
+ //       .attr("fill", "none")
+ //       .attr("stroke", "#C70000");
 
 	let countries = svg.selectAll('.country')
         .data(nodes)
