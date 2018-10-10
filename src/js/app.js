@@ -145,11 +145,13 @@ function ready(arr)
         .enter().append('g')
         .attr('class', 'country')
 
-    countries.append('rect')
     countries.append('text')
         .attr('text-anchor', 'middle')
         .attr('dy', '.3em')
         .text(function (d) { return d.countryName })
+
+    countries.append('rect')
+    
 
     simulation.nodes(nodes)
     simulation.force('link').links(links[0])
