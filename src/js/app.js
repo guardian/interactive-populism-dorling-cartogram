@@ -12,15 +12,15 @@ let europeURL = "<%= path %>/assets/europe.json";
 let width = 960
 let height = 600
 
-let interval = 2000
-let maxSize = 140
+let interval = 500
+let maxSize = 100
 
 let years = d3.range(1992, 2018 + 1, 1)
 let yearIndex = -1
 let year = years[0]
 
 let projection = d3.geoMercator()
-.center([23.106111,53.5775])
+.center([23.106111,56.5775])
 .scale(500)
 .translate([width / 2, height / 2]);
 
@@ -135,8 +135,6 @@ function ready(arr)
      
 	let svg = d3.select(".map-wrapper svg")
 
-  console.log(topojson.feature(europeMap, europeMap.objects.europe).features)
-
 
 	svg.selectAll("path")
        .data(topojson.feature(europeMap, europeMap.objects.europe).features)
@@ -165,16 +163,37 @@ function ready(arr)
     simulation.on('tick', ticked)
 
     update()
+
     d3.interval(update, interval)
 
+    let cont = 0;
+
     function update() {
+
+      if(cont < 27)
+      {
         year = years[++yearIndex >= years.length ? yearIndex = 0 : yearIndex]
 
         yearLabel.text(year)
 
         if (yearIndex === 0) { nodes.forEach(function (d) { d.x = d.xi; d.y = d.yi }) }
+        console.log("update")
+
+        cont++
 
         simulation.nodes(nodes).alpha(1).restart()
+      }
+      else
+      {
+        simulation.stop()
+      }
+
+      
+
+      
+        
+
+
     }
 
 
@@ -191,6 +210,7 @@ function ready(arr)
         countries.selectAll('rect')
             .attr('x', function (d) { return sizes.get(this) / -2 })
             .attr('y', function (d) { return sizes.get(this) / -2 })
+            //.attr('r', function (d) { return Math.sqrt(sizes.get(this) / 2) * 5 })
             .attr('width', function (d) { return sizes.get(this) })
             .attr('height', function (d) { return sizes.get(this) })
     }	
