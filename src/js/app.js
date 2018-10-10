@@ -142,11 +142,11 @@ function getValue(node, data){
 
 // Ratio of Obese (BMI >= 30) in U.S. Adults, CDC 2008
 var valueById = [
-    NaN, 2, 0.198,   NaN, 0.133, 0.175, 0.151,   NaN, 0.100, 0.125,
+    NaN, 0.9, 0.198,   NaN, 0.133, 0.175, 0.151,   NaN, 0.100, 0.125,
   0.171,   NaN, 0.172, 0.133,   NaN, 0.108, 0.142, 0.167, 0.201, 0.175,
   0.159, 0.169, 0.177, 0.141, 0.163, 0.117, 0.182, 0.153, 0.195, 0.189,
   0.134, 0.163, 0.133, 0.151, 0.145, 0.130, 0.139, 0.169, 0.164, 0.175,
-  0.135, 0.152, 0.169,   NaN, 0.132, 0.167, 0.139, 0.184, 0.159, 0.140,
+  0.135, 0.152, 0.169,   NaN, 0.132, 0.2, 0.139, 0.184, 0.159, 0.140,
   0.146, 0.157,   NaN, 0.139, 0.183, 0.160, 0.143
 ];
 var svg = d3.select(".circles-wrapper svg"),
@@ -191,15 +191,20 @@ function ready(st){
       .force("collide", collide)
       .nodes(nodes)
       .on("tick", tick);
-  var node = svg.selectAll("rect")
+
+  var node = svg.selectAll("circle")
     .data(nodes)
-    .enter().append("rect")
-      .attr("width", function(d) { return d.r * 2; })
-      .attr("height", function(d) { return d.r * 2; });
+    .enter().append("circle")
+      .attr("r", function(d) { return d.r; })
+      .attr("fill", "none")
+      .attr("stroke", "#C70000")
+      
+
   function tick(e) {
-    node.attr("x", function(d) { return d.x - d.r; })
-        .attr("y", function(d) { return d.y - d.r; });
+    node.attr("cx", function(d) { return d.x - d.r; })
+        .attr("cy", function(d) { return d.y - d.r; });
   }
+
   function collide() {
     for (var k = 0, iterations = 4, strength = 0.5; k < iterations; ++k) {
       for (var i = 0, n = nodes.length; i < n; ++i) {
