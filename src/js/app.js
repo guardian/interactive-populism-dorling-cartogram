@@ -1,5 +1,6 @@
 import * as d3B from 'd3'
 import * as d3Select from 'd3-selection'
+import textures from 'textures'
 
 let d3 = Object.assign({}, d3B, d3Select);
 
@@ -86,6 +87,18 @@ let names = [{name:"Austria", iso3:"AUS"},
 
 let classNames = [];
 
+
+const texture = textures
+  .lines()
+  .orientation("horizontal")
+  .size(3)
+  .strokeWidth(1)
+  .stroke("darkorange");
+
+ 
+
+svg.call(texture);
+
 let europeCartogram = svg.selectAll('rect')
     .data(grid)
     .enter()
@@ -98,14 +111,15 @@ let europeCartogram = svg.selectAll('rect')
     .attr("transform" , (d) => {return "translate(" + d.x + "," + d.y + ")"} )
     .attr("width" , width  / columns)
     .attr("height" , width  / columns)
-    .attr({'stroke':'white', 'stroke-width':"1px", "fill":"#C70000"});
+    .style('fill', texture.url());
 
 
     europeCartogram
     .append('text')
     .attr("transform" , (d) => {return "translate(" + (d.x + 5) + "," + d.y + ")"} )
     .attr('text-anchor', 'start')
-    .attr('dy', '1.2em')
+    .attr('dy', '1.5em')
+    .attr('dx', '.2em')
     .text( (d,i) => { let country = names.find(n => n.name.split(" ").join("-") == classNames[i]);  return country.iso3})
 
 
