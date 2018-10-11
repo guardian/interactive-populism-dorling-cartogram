@@ -16,13 +16,13 @@ path {
 }
 
 rect {
-    fill: #C70000;;
-    stroke: #FFF;
+    fill: #BABABA;;
+
 }
 text {
     font-family: sans-serif;
     font-size: 11px;
-    fill: #333;
+    fill: white;
 }
 text.year {
     font-size: 24px;
@@ -33,4 +33,18 @@ text.year {
 circle {
     fill: rgba(15,30,150,.25);
     stroke: #555;
+}
+
+path{
+	
+	stroke-width:1px;
+	fill:none;
+}
+
+.rightLine{
+	stroke: #0000C7;
+}
+
+.leftLine{
+	stroke: #C70000;
 }

@@ -1,325 +1,208 @@
 import * as d3B from 'd3'
 import * as d3Select from 'd3-selection'
-import * as d3geo from 'd3-geo'
-import * as topojson from 'topojson'
 
-let d3 = Object.assign({}, d3B, d3geo);
+let d3 = Object.assign({}, d3B, d3Select);
 
 let dataURL = "<%= path %>/assets/yearbycountry.json";
-let europeURL = "<%= path %>/assets/europe.json";
+
+let svg = d3.select(".map-wrapper svg")
+
+let svgWidth = document.querySelector(".map-wrapper svg").clientWidth;
+let svgHeight = document.querySelector(".map-wrapper svg").clientHeight;
+
+let width = svgWidth
+let height = svgHeight
+
+let squares = 81;
+let columns = 9;
+let rows = 9;
+let grid = makeGrid(squares,columns, rows, width, height);
+
+let europe28 =[];
+europe28[49]="Austria";
+europe28[47]="Belgium";
+europe28[70]="Bulgaria";
+europe28[57]="Switzerland";
+europe28[80]="Cyprus";
+europe28[50]="Czech Republic";
+europe28[40]="Germany";
+europe28[31]="Denmark";
+europe28[65]="Spain";
+europe28[15]="Estonia";
+europe28[6]="Finland";
+europe28[56]="France";
+europe28[29]="United Kingdom";
+europe28[79]="Greece";
+europe28[68]="Croatia";
+europe28[60]="Hungary";
+europe28[27]="Ireland";
+europe28[9]="Iceland";
+europe28[58]="Italy";
+europe28[32]="Lithuania";
+europe28[48]="Luxembourg";
+europe28[24]="Latvia";
+europe28[67]="Malta";
+europe28[39]="Netherlands";
+europe28[4]="Norway";
+europe28[41]="Poland";
+europe28[64]="Portugal";
+europe28[61]="Romania";
+europe28[51]="Slovakia";
+europe28[59]="Slovenia";
+europe28[5]="Sweden";
 
 
-let width = 960
-let height = 700
+let names = [{name:"Austria", iso3:"AUS"},
+{name:"Belgium", iso3:"BEL"},
+{name:"Bulgaria", iso3:"BUL"},
+{name:"Switzerland", iso3:"SWI"},
+{name:"Cyprus", iso3:"CYP"},
+{name:"Czech Republic", iso3:"CZE"},
+{name:"Germany", iso3:"GER"},
+{name:"Denmark", iso3:"DEN"},
+{name:"Spain", iso3:"SPA"},
+{name:"Estonia", iso3:"EST"},
+{name:"Finland", iso3:"FIN"},
+{name:"France", iso3:"FRA"},
+{name:"United Kingdom", iso3:" UK"},
+{name:"Greece", iso3:"GRE"},
+{name:"Croatia", iso3:"CRO"},
+{name:"Hungary", iso3:"HUN"},
+{name:"Ireland", iso3:"IRE"},
+{name:"Iceland", iso3:"ICE"},
+{name:"Italy", iso3:"ITA"},
+{name:"Lithuania", iso3:"LIT"},
+{name:"Luxembourg", iso3:"LUX"},
+{name:"Latvia", iso3:"LAT"},
+{name:"Malta", iso3:"MAL"},
+{name:"Netherlands", iso3:"NET"},
+{name:"Norway", iso3:"NOR"},
+{name:"Poland", iso3:"POL"},
+{name:"Portugal", iso3:"POR"},
+{name:"Romania", iso3:"ROM"},
+{name:"Slovakia", iso3:"SVK"},
+{name:"Slovenia", iso3:"SVN"},
+{name:"Sweden", iso3:"SWE"}]
 
-let interval = 500
-let maxSize = 100
+let classNames = [];
 
-let years = d3.range(1992, 2018 + 1, 1)
-let yearIndex = -1
-let year = years[0]
+let europeCartogram = svg.selectAll('rect')
+    .data(grid)
+    .enter()
+    .filter((d,i) => {if(europe28[i] != undefined){classNames.push(europe28[i].split(" ").join("-"))}; return europe28[i] != undefined})
+    .append("g")
+    .attr("class", (d,i) => {return classNames[i]});
 
-let projection = d3.geoMercator()
-.center([23.106111,56.5775])
-.scale(400)
-.translate([width / 2, height / 2]);
-
-let path = d3.geoPath().projection(projection);
-
-let size = d3.scaleSqrt().range([0, maxSize])
-
-let svg = d3.select('.map-wrapper svg')
-    .attr('width', width)
-    .attr('height', height)
-    .append('g')
-
-let yearLabel = svg.append('text')
-    .attr('class', 'year')
-    .attr('x', width / 2)
-    .attr('y', 30)
-    .attr('text-anchor', 'middle')
+    europeCartogram
+    .append("rect")
+    .attr("transform" , (d) => {return "translate(" + d.x + "," + d.y + ")"} )
+    .attr("width" , width  / columns)
+    .attr("height" , width  / columns)
+    .attr({'stroke':'white', 'stroke-width':"1px", "fill":"#C70000"});
 
 
-let linkForce = d3.forceLink()
-				.id(function (d) { return d.countryName })
-				.distance(function (d) {
-			        return (
-			            size(d.source.populism.find(function (e) { return e.year === year }).pop) +
-			            size(d.target.populism.find(function (e) { return e.year === year }).pop)
-			        ) / 2
-			    })
-			    .strength(0.6)
+    europeCartogram
+    .append('text')
+    .attr("transform" , (d) => {return "translate(" + (d.x + 5) + "," + d.y + ")"} )
+    .attr('text-anchor', 'start')
+    .attr('dy', '1.2em')
+    .text( (d,i) => { let country = names.find(n => n.name.split(" ").join("-") == classNames[i]);  return country.iso3})
 
 
-let collisionForce = rectCollide()
-    .size(function (d) {
-        let l = size(d.populism.find(function (e) { return e.year === year }).pop)
-        return [l, l]
-    })
-    .iterations(12)
+function makeGrid(squares, columns, rows, width, height)
+{
+  let positions = [];
+  let heightAccum = 0,
+    widthAccum = 0,
+    count = 0,
+    squareWidth = width / columns,
+    squareheight = height / rows;
 
-let simulation = d3.forceSimulation()
-			    .force('center', d3.forceCenter(width / 2, (height - maxSize) / 2))
-			    .force('link', linkForce)
-			    .force('collision', collisionForce)
-			    .force('x', d3.forceX(function (d) { return d.xi }).strength(0.0125))
-			    .force('y', d3.forceY(function (d) { return d.yi }).strength(0.0125))
+  for (let i = 0; i < squares; i++) {
+    positions.push({x:widthAccum, y:heightAccum, center:[widthAccum + (width  / columns) / 2, heightAccum + (width / columns) / 2], width:squareWidth, height:squareheight});
 
+    widthAccum += squareWidth;
+
+    count++
+    
+    if(count % columns == 0)
+    {
+      heightAccum += squareWidth;
+      widthAccum = 0;
+      count = 0;
+    }
+  }
+
+  return positions;
+}
 
 Promise.all([
-	d3.json(europeURL),
     d3.json(dataURL)
     ])
 .then(ready)
 
 
+function ready(data){
+	
 
-function ready(arr)
-{
-	let data = arr[1];
-	let europeMap = arr[0];
-	let neighbors = topojson.neighbors(europeMap.objects.europe.geometries);
+	let nodes = data[0];
 
-	let nodes = [];
-	let links = [];
+	nodes.forEach(n => {
 
-	topojson.feature(europeMap, europeMap.objects.europe).features.forEach(function(node) {
-		let centroid = d3.geoPath().centroid(node);
-		let countryName = node.properties.name_long;
-		let isoa3 = node.properties.iso_a3;
-		let countryData = data.find(d => d.country == countryName);
-		let populism = [];
+		let group = d3.select("." + n.country.split(" ").join("-"));
+		let rect = group.select("rect");
+		let marginX = parseFloat(rect.attr("transform").split("translate(")[1].split(",")[0]);
+		let marginY = parseFloat(rect.attr("transform").split("translate(")[1].split(",")[1].split(")")[0]);
 
-		if(countryData){
-			countryData.years.forEach(y => {
+		let countryData = [];
 
-				let pop = null;
+		let x = d3.scaleTime().range([0, rect.attr("width")]).domain([1992,2018]),
+	    	y = d3.scaleLinear().range([rect.attr("height"), 0]).domain([0,100]),
+	    	z = d3.scaleOrdinal(d3.schemeCategory10);
 
-				if(y.totalPopulist != 0){
-					pop = y.totalPopulist.totalshare
-				}
+		let lineRight = d3.line()
+	    	.curve(d3.curveBasis)
+	    	.x(function(d) { return x(d.year)})
+	    	.y(function(d) { return y(d.rightShare)});
 
-				populism.push({year:y.year, pop:pop})
-			})
+	    let lineLeft = d3.line()
+	    	.curve(d3.curveBasis)
+	    	.x(function(d) { return x(d.year)})
+	    	.y(function(d) { return y(d.leftShare)});
+		
+		 countryData.push({ id:n.country, values: n.years.map(d=>{
+		 	let year = d.year;
+		 	let leftShare;
+		 	let rightShare;
 
-			nodes.push({countryName:countryName, isoa3 : isoa3, lat:centroid[0], lon:centroid[1], populism:populism})
+		 	if(d.totalPopulist == 0){leftShare = 0; rightShare = 0;}
+			else {leftShare = d.totalPopulist.leftshare; rightShare = d.totalPopulist.rightshare; }
 
-		}
+		 	return {year:year, leftShare:leftShare, rightShare:rightShare}
+		 })})
+		
+	    let wings = group.selectAll(".wing")
+	    .data(countryData)
+	    .enter()
+	    .append('g')
+	    .attr('class', "wing")
+
+	    wings
+	    .append("path")
+	    .attr("class", "rightLine")
+	    .attr("d", d => { return lineRight(d.values)})
+	    .attr("transform", "translate("+ marginX + "," + marginY + ")")
+
+	    wings
+	    .append("path")
+	    .attr("class", "leftLine")
+	    .attr("d", d => { return lineLeft(d.values)})
+	    .attr("transform", "translate("+ marginX + "," + marginY + ")")
+
+
 	})
 
-	neighbors.forEach((neighbor,i) => {
-		let nLenght = neighbor.length
-		if(nLenght > 0)
-		{
-			for (let j = 0; j<nLenght; j++) {
-				links.push({
-					source:europeMap.objects.europe.geometries[i].properties.name_long, 
-					target:europeMap.objects.europe.geometries[neighbor[j]].properties.name_long
-				})
-			}
-		}
-	});
 
 
-	size.domain([0, d3.max(nodes, function (d) {
-        return d3.max(d.populism, function (e) { return e.pop })
-    })])
 
-
-    nodes.forEach(n => {
-        let coords = projection([n.lat, n.lon])
-        n.x = n.xi = coords[0]
-        n.y = n.yi = coords[1]
-    })
-
-
-	// svg.selectAll("path")
- //       .data(topojson.feature(europeMap, europeMap.objects.europe).features)
- //       .enter()
- //       .append("path")
- //       .attr("class", d => d.properties.name_long)
- //       .attr("d", path)
- //       .attr("fill", "none")
- //       .attr("stroke", "#C70000");
-
-	let countries = svg.selectAll('.country')
-        .data(nodes)
-        .enter().append('g')
-        .attr('class', 'country')
-
-    countries.append('rect')
-
-    countries.append('text')
-        .attr('text-anchor', 'middle')
-        .attr('dy', '.3em')
-        .text(function (d) { console.log(d); return d.isoa3 })
-
-    simulation.nodes(nodes)
-    simulation.force('link').links(links[0])
-    simulation.on('tick', ticked)
-
-    update()
-
-    d3.interval(update, interval)
-
-    let cont = 0;
-
-    function update() {
-
-      if(cont < 27)
-      {
-        year = years[++yearIndex >= years.length ? yearIndex = 0 : yearIndex]
-
-        yearLabel.text(year)
-
-        if (yearIndex === 0) { nodes.forEach(function (d) { d.x = d.xi; d.y = d.yi }) }
-
-        cont++
-
-        simulation.nodes(nodes).alpha(1).restart()
-      }
-      else
-      {
-        simulation.stop()
-      }
-    }
-
-    function ticked() {
-        let sizes = d3.local()
-
-        countries
-            .property(sizes, function (d) {
-                return size(d.populism.find(function (e) { return e.year === year }).pop)
-            })
-            .attr('transform', function (d) { return 'translate(' + d.x + ',' + d.y + ')' })
-
-        countries.selectAll('rect')
-            .attr('x', function (d) { return sizes.get(this) / -2 })
-            .attr('y', function (d) { return sizes.get(this) / -2 })
-            .attr('width', function (d) { return sizes.get(this) })
-            .attr('height', function (d) { return sizes.get(this) })
-    }	
 }
-
-
-
-
-function rectCollide() {
-    let nodes, sizes, masses
-    let size = constant([0, 0])
-    let strength = 1
-    let iterations = 1
-
-    function force() {
-        let node, size, mass, xi, yi
-        let i = -1
-        while (++i < iterations) { iterate() }
-
-        function iterate() {
-            let j = -1
-            let tree = d3.quadtree(nodes, xCenter, yCenter).visitAfter(prepare)
-
-            while (++j < nodes.length) {
-                node = nodes[j]
-                size = sizes[j]
-                mass = masses[j]
-                xi = xCenter(node)
-                yi = yCenter(node)
-
-                tree.visit(apply)
-            }
-        }
-
-        function apply(quad, x0, y0, x1, y1) {
-            let data = quad.data
-            let xSize = (size[0] + quad.size[0]) / 2
-            let ySize = (size[1] + quad.size[1]) / 2
-            if (data) {
-                if (data.index <= node.index) { return }
-
-                let x = xi - xCenter(data)
-                let y = yi - yCenter(data)
-                let xd = Math.abs(x) - xSize
-                let yd = Math.abs(y) - ySize
-
-                if (xd < 0 && yd < 0) {
-                    let l = Math.sqrt(x * x + y * y)
-                    let m = masses[data.index] / (mass + masses[data.index])
-
-                    if (Math.abs(xd) < Math.abs(yd)) {	
-                        node.vx -= (x *= xd / l * strength) * m
-                        data.vx += x * (1 - m)
-                    } else {
-                        node.vy -= (y *= yd / l * strength) * m
-                        data.vy += y * (1 - m)
-                    }
-                }
-            }
-
-            return x0 > xi + xSize || y0 > yi + ySize ||
-                   x1 < xi - xSize || y1 < yi - ySize
-        }
-
-        function prepare(quad) {
-            if (quad.data) {
-                quad.size = sizes[quad.data.index]
-            } else {
-                quad.size = [0, 0]
-                let i = -1
-                while (++i < 4) {
-                    if (quad[i] && quad[i].size) {
-                        quad.size[0] = Math.max(quad.size[0], quad[i].size[0])
-                        quad.size[1] = Math.max(quad.size[1], quad[i].size[1])
-                    }
-                }
-            }
-        }
-    }
-
-    function xCenter(d) { return d.x + d.vx }
-    function yCenter(d) { return d.y + d.vy }
-
-    force.initialize = function (_) {
-        sizes = (nodes = _).map(size)
-        masses = sizes.map(function (d) { return d[0] * d[1] })
-    }
-
-    force.size = function (_) {
-        return (arguments.length
-             ? (size = typeof _ === 'function' ? _ : constant(_), force)
-             : size)
-    }
-
-    force.strength = function (_) {
-        return (arguments.length ? (strength = +_, force) : strength)
-    }
-
-    force.iterations = function (_) {
-        return (arguments.length ? (iterations = +_, force) : iterations)
-    }
-
-    return force
-}
-
-function constant(_) {
-    return function () { return _ }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
