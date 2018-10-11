@@ -179,21 +179,29 @@ function ready(data){
 	    	.x(function(d) { return x(d.year)})
 	    	.y(function(d) { return y(d.rightShare)});
 
-	    let lineLeft = d3.line()
+	   let lineLeft = d3.line()
 	    	.curve(d3.curveBasis)
 	    	.x(function(d) { return x(d.year)})
 	    	.y(function(d) { return y(d.leftShare)});
+
+    let lineOther = d3.line()
+        .curve(d3.curveBasis)
+        .x(function(d) { return x(d.year)})
+        .y(function(d) { return y(d.otherShare)});
 		
 		 countryData.push({ id:n.country, values: n.years.map(d=>{
 		 	let year = d.year;
 		 	let leftShare;
-		 	let rightShare;
+      let rightShare;
+		 	let otherShare;
 
-		 	if(d.totalPopulist == 0){leftShare = 0; rightShare = 0;}
-			else {leftShare = d.totalPopulist.leftshare; rightShare = d.totalPopulist.rightshare; }
+		 	if(d.totalPopulist == 0){leftShare = null; rightShare = null; otherShare=null}
+			else {leftShare = d.totalPopulist.leftshare; rightShare = d.totalPopulist.rightshare; otherShare = d.totalPopulist.othershare; }
 
-		 	return {year:year, leftShare:leftShare, rightShare:rightShare}
+		 	return {year:year, leftShare:leftShare, rightShare:rightShare, otherShare:otherShare}
 		 })})
+
+     console.log(countryData)
 		
 	    let wings = group.selectAll(".wing")
 	    .data(countryData)
@@ -212,6 +220,12 @@ function ready(data){
 	    .attr("class", "leftLine")
 	    .attr("d", d => { return lineLeft(d.values)})
 	    .attr("transform", "translate("+ marginX + "," + marginY + ")")
+
+       wings
+      .append("path")
+      .attr("class", "otherLine")
+      .attr("d", d => { return lineOther(d.values)})
+      .attr("transform", "translate("+ marginX + "," + marginY + ")")
 
 
 	})
