@@ -88,16 +88,16 @@ let names = [{name:"Austria", iso3:"AUS"},
 let classNames = [];
 
 
-const texture = textures
-  .lines()
-  .orientation("horizontal")
-  .size(3)
-  .strokeWidth(1)
-  .stroke("darkorange");
+// const texture = textures
+//   .lines()
+//   .orientation("horizontal")
+//   .size(3)
+//   .strokeWidth(1)
+//   .stroke("darkorange");
 
  
 
-svg.call(texture);
+// svg.call(texture);
 
 let europeCartogram = svg.selectAll('rect')
     .data(grid)
@@ -111,7 +111,7 @@ let europeCartogram = svg.selectAll('rect')
     .attr("transform" , (d) => {return "translate(" + d.x + "," + d.y + ")"} )
     .attr("width" , width  / columns)
     .attr("height" , width  / columns)
-    .style('fill', texture.url());
+    //.style('fill', texture.url());
 
 
     europeCartogram
@@ -177,17 +177,20 @@ function ready(data){
 		let lineRight = d3.line()
 	    	.curve(d3.curveBasis)
 	    	.x(function(d) { return x(d.year)})
-	    	.y(function(d) { return y(d.rightShare)});
+	    	.y(function(d) { return y(d.rightShare)})
+        .defined(function (d) { return d.rightShare !== null });
 
 	   let lineLeft = d3.line()
 	    	.curve(d3.curveBasis)
 	    	.x(function(d) { return x(d.year)})
-	    	.y(function(d) { return y(d.leftShare)});
+	    	.y(function(d) { return y(d.leftShare)})
+        .defined(function (d) { return d.leftShare !== null });
 
     let lineOther = d3.line()
         .curve(d3.curveBasis)
         .x(function(d) { return x(d.year)})
-        .y(function(d) { return y(d.otherShare)});
+        .y(function(d) { return y(d.otherShare)})
+        .defined(function (d) { return d.otherShare !== null });
 		
 		 countryData.push({ id:n.country, values: n.years.map(d=>{
 		 	let year = d.year;
@@ -196,13 +199,18 @@ function ready(data){
 		 	let otherShare;
 
 		 	if(d.totalPopulist == 0){leftShare = null; rightShare = null; otherShare=null}
-			else {leftShare = d.totalPopulist.leftshare; rightShare = d.totalPopulist.rightshare; otherShare = d.totalPopulist.othershare; }
+			else {
+        let ls = (d.totalPopulist.leftshare == 0) ? leftShare = null : leftShare = d.totalPopulist.leftshare;
+        let rs = (d.totalPopulist.rightshare == 0) ? rightShare = null : rightShare = d.totalPopulist.rightshare;
+        let os = (d.totalPopulist.othershare == 0) ? otherShare = null : otherShare = d.totalPopulist.othershare;
+        leftShare = ls;
+        rightShare = rs;
+        otherShare = os;
+      }
 
 		 	return {year:year, leftShare:leftShare, rightShare:rightShare, otherShare:otherShare}
 		 })})
 
-     console.log(countryData)
-		
 	    let wings = group.selectAll(".wing")
 	    .data(countryData)
 	    .enter()
