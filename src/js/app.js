@@ -84,9 +84,9 @@ function ready(arr)
 	let links = [];
 
 	topojson.feature(europeMap, europeMap.objects.europe).features.forEach(function(node) {
-
 		let centroid = d3.geoPath().centroid(node);
 		let countryName = node.properties.name_long;
+		let isoa3 = node.properties.iso_a3;
 		let countryData = data.find(d => d.country == countryName);
 		let populism = [];
 
@@ -102,7 +102,7 @@ function ready(arr)
 				populism.push({year:y.year, pop:pop})
 			})
 
-			nodes.push({countryName:countryName, lat:centroid[0], lon:centroid[1], populism:populism})
+			nodes.push({countryName:countryName, isoa3 : isoa3, lat:centroid[0], lon:centroid[1], populism:populism})
 
 		}
 	})
@@ -147,13 +147,12 @@ function ready(arr)
         .enter().append('g')
         .attr('class', 'country')
 
+    countries.append('rect')
+
     countries.append('text')
         .attr('text-anchor', 'middle')
         .attr('dy', '.3em')
-        .text(function (d) { return d.countryName })
-
-    countries.append('rect')
-    
+        .text(function (d) { console.log(d); return d.isoa3 })
 
     simulation.nodes(nodes)
     simulation.force('link').links(links[0])
@@ -174,7 +173,6 @@ function ready(arr)
         yearLabel.text(year)
 
         if (yearIndex === 0) { nodes.forEach(function (d) { d.x = d.xi; d.y = d.yi }) }
-        console.log("update")
 
         cont++
 
@@ -184,16 +182,7 @@ function ready(arr)
       {
         simulation.stop()
       }
-
-      
-
-      
-        
-
-
     }
-
-
 
     function ticked() {
         let sizes = d3.local()
@@ -207,7 +196,6 @@ function ready(arr)
         countries.selectAll('rect')
             .attr('x', function (d) { return sizes.get(this) / -2 })
             .attr('y', function (d) { return sizes.get(this) / -2 })
-            //.attr('r', function (d) { return Math.sqrt(sizes.get(this) / 2) * 5 })
             .attr('width', function (d) { return sizes.get(this) })
             .attr('height', function (d) { return sizes.get(this) })
     }	
