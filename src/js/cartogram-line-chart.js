@@ -99,9 +99,6 @@ let classNames = [];
 
 // svg.call(texture);
 
-
-let populists = ['rightshare', 'leftshare', 'othershare'];
-
 let europeCartogram = svg.selectAll('rect')
     .data(grid)
     .enter()
@@ -153,10 +150,6 @@ function makeGrid(squares, columns, rows, width, height)
   return positions;
 }
 
-
-
-
-
 Promise.all([
     d3.json(dataURL)
     ])
@@ -168,65 +161,84 @@ function ready(data){
 
 	let nodes = data[0];
 
-
-
-	nodes.forEach((n,i) => {
+	nodes.forEach(n => {
 
 		let group = d3.select("." + n.country.split(" ").join("-"));
 		let rect = group.select("rect");
 		let marginX = parseFloat(rect.attr("transform").split("translate(")[1].split(",")[0]);
 		let marginY = parseFloat(rect.attr("transform").split("translate(")[1].split(",")[1].split(")")[0]);
 
+		let countryData = [];
 
-    let x = d3.scaleTime().range([0, rect.attr("width")]).domain([1992,2018]),
-        y = d3.scaleLinear().range([rect.attr("height"), 0]).domain([0,100]);
+		let x = d3.scaleTime().range([0, rect.attr("width")]).domain([1992,2018]),
+	    	y = d3.scaleLinear().range([rect.attr("height"), 0]).domain([0,100]);
 
+		let lineRight = d3.line()
+	    	.curve(d3.curveBasis)
+	    	.x(d => { return x(d.year)})
+	    	.y(d => { return y(d.rightShare)})
+        .defined(d => { return d.rightShare !== null });
 
-    let area = d3.area()
-    .x(function(d) { return x(d.data.date)})
-    .y0(function(d) { return y(d[0]); })
-    .y1(function(d) { return y(d[1]); })
-    .curve(d3.curveStepAfter);
+	   let lineLeft = d3.line()
+	    	.curve(d3.curveBasis)
+	    	.x(d => { return x(d.year)})
+	    	.y(d => { return y(d.leftShare)})
+        .defined(d => { return d.leftShare !== null });
 
-    
-    let stack = d3.stack()
-            .keys(populists)
-            .offset(d3.stackOffsetNone);
-
-
-    let countryData = [];
+    let lineOther = d3.line()
+        .curve(d3.curveBasis)
+        .x(d => { return x(d.year)})
+        .y(d => { return y(d.otherShare)})
+        .defined(d => { return d.otherShare !== null });
 		
-    
-      n.years.forEach(y => {
+		 countryData.push({ id:n.country, values: n.years.map(d=>{
+		 	let year = d.year;
+		 	let leftShare;
+      let rightShare;
+		 	let otherShare;
 
-      	let rs = (isNaN(y.totalPopulist) == true) ? rs = y.totalPopulist.rightshare : rs = 0;
-      	let ls = (isNaN(y.totalPopulist) == true) ? ls = y.totalPopulist.leftshare : ls = 0;
-      	let os = (isNaN(y.totalPopulist) == true) ? os = y.totalPopulist.othershare : os = 0;
+		 	if(d.totalPopulist == 0){leftShare = null; rightShare = null; otherShare=null}
+			else {
+        let ls = (d.totalPopulist.leftshare == 0) ? leftShare = null : leftShare = d.totalPopulist.leftshare;
+        let rs = (d.totalPopulist.rightshare == 0) ? rightShare = null : rightShare = d.totalPopulist.rightshare;
+        let os = (d.totalPopulist.othershare == 0) ? otherShare = null : otherShare = d.totalPopulist.othershare;
+        leftShare = ls;
+        rightShare = rs;
+        otherShare = os;
+      }
 
-        countryData.push({date:new Date(y.year, 9, 10), rightshare:rs, leftshare:ls, othershare:os})
-    })
+		 	return {year:year, leftShare:leftShare, rightShare:rightShare, otherShare:otherShare}
+		 })})
 
-    let wings = group.selectAll(".wing")
-      .data(stack(countryData))
-      .enter()
-      .append('g')
-      .attr('class', "wing")
+	    let wings = group.selectAll(".wing")
+	    .data(countryData)
+	    .enter()
+	    .append('g')
+	    .attr('class', "wing")
 
-      wings
+	    wings
+	    .append("path")
+	    .attr("class", "rightLine")
+	    .attr("d", d => { return lineRight(d.values)})
+      .attr("transform", "translate("+ marginX + "," + marginY + ")")
+	    .attr("fill", "none")
+
+	    wings
+	    .append("path")
+	    .attr("class", "leftLine")
+	    .attr("d", d => { return lineLeft(d.values)})
+	    .attr("transform", "translate("+ marginX + "," + marginY + ")")
+      .attr("fill", "none")
+
+       wings
       .append("path")
-      .attr("class", "rightLine")
-      .attr("d", area)
-      //.attr("transform", "translate("+ marginX + "," + marginY + ")")
+      .attr("class", "otherLine")
+      .attr("d", d => { return lineOther(d.values)})
+      .attr("transform", "translate("+ marginX + "," + marginY + ")")
+      .attr("fill", "none")
 
 
-      console.log(populists, countryData, stack(countryData))
-
-    
- })
-
-  
-
-
+	})
 
 
 
