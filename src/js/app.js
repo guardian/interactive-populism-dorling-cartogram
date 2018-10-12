@@ -39,7 +39,7 @@ europe28[60]="Hungary";
 europe28[27]="Ireland";
 europe28[9]="Iceland";
 europe28[58]="Italy";
-europe28[32]="Lithuania";
+europe28[33]="Lithuania";
 europe28[48]="Luxembourg";
 europe28[24]="Latvia";
 europe28[67]="Malta";
@@ -176,21 +176,21 @@ function ready(data){
 
 		let lineRight = d3.line()
 	    	.curve(d3.curveBasis)
-	    	.x(function(d) { return x(d.year)})
-	    	.y(function(d) { return y(d.rightShare)})
-        .defined(function (d) { return d.rightShare !== null });
+	    	.x(d => { return x(d.year)})
+	    	.y(d => { return y(d.rightShare)})
+        .defined(d => { return d.rightShare !== null });
 
 	   let lineLeft = d3.line()
 	    	.curve(d3.curveBasis)
-	    	.x(function(d) { return x(d.year)})
-	    	.y(function(d) { return y(d.leftShare)})
-        .defined(function (d) { return d.leftShare !== null });
+	    	.x(d => { return x(d.year)})
+	    	.y(d => { return y(d.leftShare)})
+        .defined(d => { return d.leftShare !== null });
 
     let lineOther = d3.line()
         .curve(d3.curveBasis)
-        .x(function(d) { return x(d.year)})
-        .y(function(d) { return y(d.otherShare)})
-        .defined(function (d) { return d.otherShare !== null });
+        .x(d => { return x(d.year)})
+        .y(d => { return y(d.otherShare)})
+        .defined(d => { return d.otherShare !== null });
 		
 		 countryData.push({ id:n.country, values: n.years.map(d=>{
 		 	let year = d.year;
