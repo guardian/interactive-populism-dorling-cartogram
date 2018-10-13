@@ -168,9 +168,9 @@ function ready(data){
 		
     n.years.forEach(y => {
 
-      	let rs = (isNaN(y.totalPopulist)) ? rs = y.totalPopulist.rightshare : rs = 0;
-      	let ls = (isNaN(y.totalPopulist)) ? ls = y.totalPopulist.leftshare : ls = 0;
-      	let os = (isNaN(y.totalPopulist)) ? os = y.totalPopulist.othershare : os = 0;
+      	let rs = (isNaN(y.totalPopulist)) ? rs = y.totalPopulist.share.rightshare : rs = 0;
+      	let ls = (isNaN(y.totalPopulist)) ? ls = y.totalPopulist.share.leftshare : ls = 0;
+      	let os = (isNaN(y.totalPopulist)) ? os = y.totalPopulist.share.othershare : os = 0;
 
         countryData.push({date:new Date(y.year), rightshare:rs, leftshare:ls, othershare:os})
     })
@@ -197,7 +197,18 @@ function ready(data){
             .keys(populists)
             .offset(d3.stackOffsetNone);
 
-console.log(stack(countryData))
+
+
+/*const texture = textures
+  .lines()
+  .size(3)
+  .strokeWidth(1)*/
+
+ 
+
+/*svg.call(texture);*/
+
+
     let wings = group.selectAll(".wing")
       .data(stack(countryData))
       .enter()
@@ -207,10 +218,11 @@ console.log(stack(countryData))
 
       wings
       .append("path")
-      
       .attr("d", area)
       .attr('class', function(d) { return "area " + d.key; })
       .attr("transform", "translate("+ marginX + "," + marginY + ")")
+      // .style('fill', texture.url());
+
     
  })
 
