@@ -87,19 +87,6 @@ let names = [{name:"Austria", iso3:"AUS"},
 
 let classNames = [];
 
-
-// const texture = textures
-//   .lines()
-//   .orientation("horizontal")
-//   .size(3)
-//   .strokeWidth(1)
-//   .stroke("darkorange");
-
- 
-
-// svg.call(texture);
-
-
 let populists = ['rightshare', 'leftshare', 'othershare'];
 
 let europeCartogram = svg.selectAll('rect')
@@ -170,57 +157,60 @@ function ready(data){
 
 
 
-	nodes.forEach((n,i) => {
+	nodes.forEach((n) => {
 
 		let group = d3.select("." + n.country.split(" ").join("-"));
 		let rect = group.select("rect");
 		let marginX = parseFloat(rect.attr("transform").split("translate(")[1].split(",")[0]);
 		let marginY = parseFloat(rect.attr("transform").split("translate(")[1].split(",")[1].split(")")[0]);
 
+    let countryData = [];
+		
+    n.years.forEach(y => {
 
-    let x = d3.scaleTime().range([0, rect.attr("width")]).domain([1992,2018]),
-        y = d3.scaleLinear().range([rect.attr("height"), 0]).domain([0,100]);
+      	let rs = (isNaN(y.totalPopulist)) ? rs = y.totalPopulist.rightshare : rs = 0;
+      	let ls = (isNaN(y.totalPopulist)) ? ls = y.totalPopulist.leftshare : ls = 0;
+      	let os = (isNaN(y.totalPopulist)) ? os = y.totalPopulist.othershare : os = 0;
 
+        countryData.push({date:new Date(y.year), rightshare:rs, leftshare:ls, othershare:os})
+    })
+
+    let rectWidth = parseInt(+rect.attr("width"))
+    let rectHeight = parseInt(+rect.attr("height"))
+
+    let x = d3.scaleTime()
+    .range([0, rectWidth]).domain([1992,2018]);
+
+    let y = d3.scaleLinear()
+    .range([rectHeight, 0]).domain([0,100]);
+
+    let color = d3.scaleOrdinal(d3.schemeCategory20).domain(populists);
 
     let area = d3.area()
+    .curve(d3.curveBasis)
     .x(function(d) { return x(d.data.date)})
     .y0(function(d) { return y(d[0]); })
     .y1(function(d) { return y(d[1]); })
-    .curve(d3.curveStepAfter);
 
     
     let stack = d3.stack()
             .keys(populists)
             .offset(d3.stackOffsetNone);
 
-
-    let countryData = [];
-		
-    
-      n.years.forEach(y => {
-
-      	let rs = (isNaN(y.totalPopulist) == true) ? rs = y.totalPopulist.rightshare : rs = 0;
-      	let ls = (isNaN(y.totalPopulist) == true) ? ls = y.totalPopulist.leftshare : ls = 0;
-      	let os = (isNaN(y.totalPopulist) == true) ? os = y.totalPopulist.othershare : os = 0;
-
-        countryData.push({date:new Date(y.year, 9, 10), rightshare:rs, leftshare:ls, othershare:os})
-    })
-
+console.log(stack(countryData))
     let wings = group.selectAll(".wing")
       .data(stack(countryData))
       .enter()
       .append('g')
       .attr('class', "wing")
 
+
       wings
       .append("path")
-      .attr("class", "rightLine")
+      
       .attr("d", area)
-      //.attr("transform", "translate("+ marginX + "," + marginY + ")")
-
-
-      console.log(populists, countryData, stack(countryData))
-
+      .attr('class', function(d) { return "area " + d.key; })
+      .attr("transform", "translate("+ marginX + "," + marginY + ")")
     
  })
 
