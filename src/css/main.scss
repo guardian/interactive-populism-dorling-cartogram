@@ -10,21 +10,36 @@
     margin: 0 !important;
 }
 
-path {
-  stroke: #000;
-  stroke-width: 1px;
+// path {
+//   stroke: #000;
+//   stroke-width: 1px;
+// }
+
+#wing-hatch--rightshare {
+    stroke: $highlight-yellow;
+    stroke-width: 2.5;
+}
+
+#wing-hatch--leftshare {
+    stroke: $inverted-orange;
+    stroke-width: 2.5;
+}
+
+#wing-hatch--othershare {
+    stroke: $gu-darkred;
+    stroke-width: 2.5;
 }
 
 rect {
-    fill: #F5F5F5;
-    stroke:white;
-    stroke-width:1px
+    fill: $neutral-20;
+    stroke:#d5d5d5;
+    stroke-width:1px;
 
 }
 text {
     @include fs-textSans(1);
     font-size: 12px;
-    fill: grey;
+    fill: #d5d5d5;
 }
 text.year {
     font-size: 24px;
@@ -54,31 +69,27 @@ path{
 }
 
 .otherLine{
-    stroke: black;
+    stroke: $neutral-20;
     stroke-width:2px;
 }
 
 .area{
-    stroke:white;
+   stroke-width:1px;
+   stroke: $neutral-20;
 }
 
 .rightshare{
-    fill:rgb(0, 178, 255);
+    
 }
 
 .leftshare{
-    fill: rgb(255, 78, 54);
+    
 }
 
 .othershare{
-    fill:grey;
+    
 }
 
-.module {
-  background: white;
-  border: 1px solid #ccc;
-  margin: 3%;
-}
 
 .stripe-1 {
   

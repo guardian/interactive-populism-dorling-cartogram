@@ -2,11 +2,13 @@ import * as d3B from 'd3'
 import * as d3Select from 'd3-selection'
 import textures from 'textures'
 
-let d3 = Object.assign({}, d3B, d3Select);
+const d3 = Object.assign({}, d3B, d3Select);
 
-let dataURL = "<%= path %>/assets/yearbycountry.json";
+const dataURL = "<%= path %>/assets/yearbycountry.json";
 
-let svg = d3.select(".map-wrapper svg")
+const svg = d3.select(".map-wrapper svg");
+
+const defs = svg.append('defs')
 
 let svgWidth = document.querySelector(".map-wrapper svg").clientWidth;
 let svgHeight = document.querySelector(".map-wrapper svg").clientHeight;
@@ -187,26 +189,38 @@ function ready(data){
     let color = d3.scaleOrdinal(d3.schemeCategory20).domain(populists);
 
     let area = d3.area()
-    .curve(d3.curveBasis)
+    .curve(d3.curveStep)
     .x(function(d) { return x(d.data.date)})
     .y0(function(d) { return y(d[0]); })
     .y1(function(d) { return y(d[1]); })
+    //.defined( d => d.data[0] > 0 || d.data[1] > 0)
 
     
     let stack = d3.stack()
             .keys(populists)
             .offset(d3.stackOffsetNone);
 
+let wingPattern
 
+            populists.forEach(d => {
 
-/*const texture = textures
-  .lines()
-  .size(3)
-  .strokeWidth(1)*/
+              wingPattern = defs
+              .append('pattern')
+              .attr('id', 'wing-hatch--' + d)
+              .attr('class', 'wing-hatch')
+              .attr('patternUnits', 'userSpaceOnUse')
+              .attr('width', 4)
+              .attr('height', 4)
 
- 
+              .append('path')
+              .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
+              .attr('class', 'wing-hatch-stroke')
+              //.style('stroke', wingColour)
 
-/*svg.call(texture);*/
+            })
+    
+  
+    
 
 
     let wings = group.selectAll(".wing")
@@ -221,7 +235,7 @@ function ready(data){
       .attr("d", area)
       .attr('class', function(d) { return "area " + d.key; })
       .attr("transform", "translate("+ marginX + "," + marginY + ")")
-      // .style('fill', texture.url());
+      .style('fill', d => {return `url('#wing-hatch--${d.key}')`});
 
     
  })
