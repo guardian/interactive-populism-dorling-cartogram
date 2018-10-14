@@ -15,26 +15,51 @@
 //   stroke-width: 1px;
 // }
 
+body{background: black;}
+
+.interactive-wrapper{position: absolute; left: 50%;}
+
+
+.gv-title__line {
+    position: absolute;
+    z-index: 5;
+    padding-left: 10px;
+    margin-top: 0px;
+    font-size: 16px;
+    line-height: 20px;
+    font-family: "Guardian Headline","Guardian Headline Full","Guardian Egyptian Web",Georgia,serif;
+    font-weight: bold;
+    font-size: 35px;
+    line-height: 44px;
+    padding-bottom: 24px;
+    margin-left: -1px;
+    max-width: 400px;
+    color: $highlight-yellow;
+
+}
+
 #wing-hatch--rightshare {
     stroke: $highlight-yellow;
-    stroke-width: 2.5;
+    stroke-width: 2;
 }
 
 #wing-hatch--leftshare {
     stroke: $inverted-orange;
-    stroke-width: 2.5;
+    stroke-width: 2;
 }
 
 #wing-hatch--othershare {
     stroke: $gu-darkred;
-    stroke-width: 2.5;
+    stroke-width: 2;
 }
 
 rect {
     fill: $neutral-20;
-    stroke-width:1px;
+    
+    
 
 }
+
 text {
     @include fs-textSans(1);
     font-size: 12px;

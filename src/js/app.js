@@ -10,8 +10,8 @@ const svg = d3.select(".map-wrapper svg");
 
 const defs = svg.append('defs')
 
-let svgWidth = document.querySelector(".map-wrapper svg").clientWidth;
-let svgHeight = document.querySelector(".map-wrapper svg").clientHeight;
+let svgWidth = document.querySelector(".map-wrapper svg").clientWidth -10;
+let svgHeight = document.querySelector(".map-wrapper svg").clientHeight -10;
 
 let width = svgWidth
 let height = svgHeight
@@ -24,7 +24,7 @@ let grid = makeGrid(squares,columns, rows, width, height);
 let europe28 =[];
 europe28[49]="Austria";
 europe28[47]="Belgium";
-europe28[70]="Bulgaria";
+europe28[61]="Bulgaria";
 europe28[57]="Switzerland";
 europe28[80]="Cyprus";
 europe28[50]="Czech Republic";
@@ -35,7 +35,7 @@ europe28[15]="Estonia";
 europe28[6]="Finland";
 europe28[56]="France";
 europe28[29]="United Kingdom";
-europe28[79]="Greece";
+europe28[70]="Greece";
 europe28[68]="Croatia";
 europe28[60]="Hungary";
 europe28[27]="Ireland";
@@ -49,7 +49,7 @@ europe28[39]="Netherlands";
 europe28[4]="Norway";
 europe28[41]="Poland";
 europe28[64]="Portugal";
-europe28[61]="Romania";
+europe28[52]="Romania";
 europe28[51]="Slovakia";
 europe28[59]="Slovenia";
 europe28[5]="Sweden";
@@ -100,10 +100,10 @@ let europeCartogram = svg.selectAll('rect')
 
     europeCartogram
     .append("rect")
+    .attr("class", (d,i) => {let country = names.find(n => n.name.split(" ").join("-") == classNames[i]); return country.border})
     .attr("transform" , (d) => {return "translate(" + d.x + "," + d.y + ")"} )
     .attr("width" , width  / columns)
     .attr("height" , width  / columns)
-    //.style('fill', texture.url());
 
 
     europeCartogram
@@ -121,19 +121,19 @@ function makeGrid(squares, columns, rows, width, height)
   let heightAccum = 0,
     widthAccum = 0,
     count = 0,
-    squareWidth = width / columns,
-    squareheight = height / rows;
+    squareWidth = parseInt(width / columns),
+    squareheight = parseInt(height / rows);
 
   for (let i = 0; i < squares; i++) {
-    positions.push({x:widthAccum, y:heightAccum, center:[widthAccum + (width  / columns) / 2, heightAccum + (width / columns) / 2], width:squareWidth, height:squareheight});
+    positions.push({x:widthAccum , y:heightAccum, center:[widthAccum + (width  / columns) / 2, heightAccum + (width / columns) / 2], width:squareWidth, height:squareheight});
 
-    widthAccum += squareWidth;
+    widthAccum += squareWidth + 2;
 
     count++
     
     if(count % columns == 0)
     {
-      heightAccum += squareWidth;
+      heightAccum += squareWidth + 2;
       widthAccum = 0;
       count = 0;
     }
@@ -141,10 +141,6 @@ function makeGrid(squares, columns, rows, width, height)
 
   return positions;
 }
-
-
-
-
 
 Promise.all([
     d3.json(dataURL)
@@ -163,8 +159,8 @@ function ready(data){
 
 		let group = d3.select("." + n.country.split(" ").join("-"));
 		let rect = group.select("rect");
-		let marginX = parseFloat(rect.attr("transform").split("translate(")[1].split(",")[0]);
-		let marginY = parseFloat(rect.attr("transform").split("translate(")[1].split(",")[1].split(")")[0]);
+		let marginX = parseInt(rect.attr("transform").split("translate(")[1].split(",")[0]);
+		let marginY = parseInt(rect.attr("transform").split("translate(")[1].split(",")[1].split(")")[0]);
 
     let countryData = [];
 		
@@ -185,8 +181,6 @@ function ready(data){
 
     let y = d3.scaleLinear()
     .range([rectHeight, 0]).domain([0,100]);
-
-    let color = d3.scaleOrdinal(d3.schemeCategory20).domain(populists);
 
     let area = d3.area()
     .curve(d3.curveStep)
