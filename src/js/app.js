@@ -193,7 +193,7 @@ function ready(data){
     .x(function(d) { return x(d.data.date)})
     .y0(function(d) { return y(d[0]); })
     .y1(function(d) { return y(d[1]); })
-    //.defined( d => d.data[0] > 0 || d.data[1] > 0)
+    .defined( d => {return d[1] > 0 })
 
     
     let stack = d3.stack()
