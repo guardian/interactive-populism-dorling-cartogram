@@ -121,6 +121,8 @@ path{
 .annotations-text tspan{font-family:'TE32TextEgyptian-Bold'; font-size:16px;}
 .tspanYellow{color: $highlight-yellow;}
 
+#arrow path{fill:white}
+
 /*@keyframes widen {
   100% {
     width: 100%;

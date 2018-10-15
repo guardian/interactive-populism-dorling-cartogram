@@ -28,7 +28,8 @@ var annotations =
   {
     "annWidth": 100,
     "annLength": 100,
-    "path": "M372,381L372,470",
+    "path": "M374,467L374,380",
+    "class": "arrow",
     "text": "Jobbik, Hungary's far right party, obtained in 2014 XX% of share vote",
     "textOffset": [
       268,
@@ -38,7 +39,7 @@ var annotations =
   {
     "annWidth": 400,
     "annLenght": 400,
-    "path": "M 17,7 A 106.718 106.718 0 0 0 194,29",
+    "path": "M 301,121 A 71.201 71.201 0 0 0 365,80",
     "class": "arrow",
     "text": "interactive",
     "textOffset": [
@@ -46,7 +47,6 @@ var annotations =
       -54
     ]
   }
-
 ]
 
 let europe28 =[];
@@ -260,7 +260,7 @@ function ready(data){
   var swoopy = d3.swoopyDrag()
   .x(d => d.annWidth)
   .y(d => d.annLength)
-  .draggable(true)
+  .draggable(false)
   .annotations(annotations)
   .on("drag", d => window.annotations = annotations)
 
