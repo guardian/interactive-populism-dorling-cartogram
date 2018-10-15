@@ -1,8 +1,10 @@
 import * as d3B from 'd3'
 import * as d3Select from 'd3-selection'
 import textures from 'textures'
+import * as d3Swoopydrag from 'd3-swoopy-drag'
+import * as d3Jetpack from 'd3-jetpack'
 
-const d3 = Object.assign({}, d3B, d3Select);
+const d3 = Object.assign({}, d3B, d3Select, d3Swoopydrag, d3Jetpack);
 
 const dataURL = "<%= path %>/assets/yearbycountry.json";
 
@@ -20,6 +22,32 @@ let squares = 81;
 let columns = 9;
 let rows = 9;
 let grid = makeGrid(squares,columns, rows, width, height);
+
+var annotations =
+[
+  {
+    "annWidth": 100,
+    "annLength": 100,
+    "path": "M372,381L372,470",
+    "text": "Jobbik, Hungary's far right party, obtained in 2014 XX% of share vote",
+    "textOffset": [
+      268,
+      486
+    ]
+  },
+  {
+    "annWidth": 400,
+    "annLenght": 400,
+    "path": "M 17,7 A 106.718 106.718 0 0 0 194,29",
+    "class": "arrow",
+    "text": "interactive",
+    "textOffset": [
+      -114,
+      -54
+    ]
+  }
+
+]
 
 let europe28 =[];
 europe28[49]="Austria";
@@ -92,37 +120,37 @@ let classNames = [];
 let populists = ['rightshare', 'leftshare', 'othershare'];
 
 let europeCartogram = svg.selectAll('rect')
-    .data(grid)
-    .enter()
-    .filter((d,i) => {if(europe28[i] != undefined){classNames.push(europe28[i].split(" ").join("-"))}; return europe28[i] != undefined})
-    .append("g")
-    .attr("class", (d,i) => {return classNames[i]});
+.data(grid)
+.enter()
+.filter((d,i) => {if(europe28[i] != undefined){classNames.push(europe28[i].split(" ").join("-"))}; return europe28[i] != undefined})
+.append("g")
+.attr("class", (d,i) => {return classNames[i]});
 
-    europeCartogram
-    .append("rect")
-    .attr("class", (d,i) => {let country = names.find(n => n.name.split(" ").join("-") == classNames[i]); return country.border})
-    .attr("transform" , (d) => {return "translate(" + d.x + "," + d.y + ")"} )
-    .attr("width" , width  / columns)
-    .attr("height" , width  / columns)
+europeCartogram
+.append("rect")
+.attr("class", (d,i) => {let country = names.find(n => n.name.split(" ").join("-") == classNames[i]); return country.border})
+.attr("transform" , (d) => {return "translate(" + d.x + "," + d.y + ")"} )
+.attr("width" , width  / columns)
+.attr("height" , width  / columns)
 
 
-    europeCartogram
-    .append('text')
-    .attr("transform" , (d) => {return "translate(" + (d.x + 5) + "," + d.y + ")"} )
-    .attr('text-anchor', 'start')
-    .attr('dy', '1.5em')
-    .attr('dx', '.2em')
-    .text( (d,i) => { let country = names.find(n => n.name.split(" ").join("-") == classNames[i]);  return country.iso3})
+europeCartogram
+.append('text')
+.attr("transform" , (d) => {return "translate(" + (d.x + 5) + "," + d.y + ")"} )
+.attr('text-anchor', 'start')
+.attr('dy', '1.5em')
+.attr('dx', '.2em')
+.text( (d,i) => { let country = names.find(n => n.name.split(" ").join("-") == classNames[i]);  return country.iso3})
 
 
 function makeGrid(squares, columns, rows, width, height)
 {
   let positions = [];
   let heightAccum = 0,
-    widthAccum = 0,
-    count = 0,
-    squareWidth = parseInt(width / columns),
-    squareheight = parseInt(height / rows);
+  widthAccum = 0,
+  count = 0,
+  squareWidth = parseInt(width / columns),
+  squareheight = parseInt(height / rows);
 
   for (let i = 0; i < squares; i++) {
     positions.push({x:widthAccum , y:heightAccum, center:[widthAccum + (width  / columns) / 2, heightAccum + (width / columns) / 2], width:squareWidth, height:squareheight});
@@ -143,8 +171,8 @@ function makeGrid(squares, columns, rows, width, height)
 }
 
 Promise.all([
-    d3.json(dataURL)
-    ])
+  d3.json(dataURL)
+  ])
 .then(ready)
 
 
@@ -163,21 +191,21 @@ function ready(data){
 		let marginY = parseInt(rect.attr("transform").split("translate(")[1].split(",")[1].split(")")[0]);
 
     let countryData = [];
-		
+
     n.years.forEach(y => {
 
-      	let rs = (isNaN(y.totalPopulist)) ? rs = y.totalPopulist.share.rightshare : rs = 0;
-      	let ls = (isNaN(y.totalPopulist)) ? ls = y.totalPopulist.share.leftshare : ls = 0;
-      	let os = (isNaN(y.totalPopulist)) ? os = y.totalPopulist.share.othershare : os = 0;
+     let rs = (isNaN(y.totalPopulist)) ? rs = y.totalPopulist.share.rightshare : rs = 0;
+     let ls = (isNaN(y.totalPopulist)) ? ls = y.totalPopulist.share.leftshare : ls = 0;
+     let os = (isNaN(y.totalPopulist)) ? os = y.totalPopulist.share.othershare : os = 0;
 
-        countryData.push({date:new Date(y.year), rightshare:rs, leftshare:ls, othershare:os})
-    })
+     countryData.push({date:new Date(y.year), rightshare:rs, leftshare:ls, othershare:os})
+   })
 
-    let rectWidth = parseInt(+rect.attr("width"))
-    let rectHeight = parseInt(+rect.attr("height"))
+    let rectWidth = parseInt(rect.attr("width"))
+    let rectHeight = parseInt(rect.attr("height"))
 
     let x = d3.scaleTime()
-    .range([0, rectWidth]).domain([1992,2018]);
+    .range([0,rectWidth]).domain([1992,2018]);
 
     let y = d3.scaleLinear()
     .range([rectHeight, 0]).domain([0,100]);
@@ -191,54 +219,82 @@ function ready(data){
 
     
     let stack = d3.stack()
-            .keys(populists)
-            .offset(d3.stackOffsetNone);
+    .keys(populists)
+    .offset(d3.stackOffsetNone);
 
-let wingPattern
+    let wingPattern
 
-            populists.forEach(d => {
+    populists.forEach(d => {
 
-              wingPattern = defs
-              .append('pattern')
-              .attr('id', 'wing-hatch--' + d)
-              .attr('class', 'wing-hatch')
-              .attr('patternUnits', 'userSpaceOnUse')
-              .attr('width', 4)
-              .attr('height', 4)
+      wingPattern = defs
+      .append('pattern')
+      .attr('id', 'wing-hatch--' + d)
+      .attr('class', 'wing-hatch')
+      .attr('patternUnits', 'userSpaceOnUse')
+      .attr('width', 4)
+      .attr('height', 4)
 
-              .append('path')
-              .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
-              .attr('class', 'wing-hatch-stroke')
-              //.style('stroke', wingColour)
-
-            })
-    
-  
-    
+      .append('path')
+      .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
+      .attr('class', 'wing-hatch-stroke')
+    })
 
 
     let wings = group.selectAll(".wing")
-      .data(stack(countryData))
-      .enter()
-      .append('g')
-      .attr('class', "wing")
+    .data(stack(countryData))
+    .enter()
+    .append('g')
+    .attr('class', "wing")
 
 
-      wings
-      .append("path")
-      .attr("d", area)
-      .attr('class', function(d) { return "area " + d.key; })
-      .attr("transform", "translate("+ marginX + "," + marginY + ")")
-      .style('fill', d => {return `url('#wing-hatch--${d.key}')`});
+    wings
+    .append("path")
+    .attr("d", area)
+    .attr('class', function(d) { return "area " + d.key; })
+    .attr("transform", "translate("+ marginX + "," + marginY + ")")
+    .style('fill', d => {return `url('#wing-hatch--${d.key}')`});
 
     
- })
+  })
+
+  var swoopy = d3.swoopyDrag()
+  .x(d => d.annWidth)
+  .y(d => d.annLength)
+  .draggable(true)
+  .annotations(annotations)
+  .on("drag", d => window.annotations = annotations)
+
+  var swoopySel = svg.append('g').attr("class", "annotations-text").call(swoopy)
 
   
 
+  
 
+  swoopySel.selectAll('text')
+  //.filter(function(t){return t.class == 'annotation' || t.class == 'arrow'})
+  .each(function(d){
+    d3.select(this)
+      .text('')                        //clear existing text
+      .tspans(d3.wordwrap(d.text, 20), 25) //wrap after 20 char
+  })
 
+  var markerDefs = svg.append('svg:defs')
+    .attr('id', "markerDefs");
 
+  markerDefs.append('marker')
+    .attr('id', 'arrow')
+    .attr('viewBox', '-10 -10 20 20')
+    .attr('markerWidth', 20)
+    .attr('markerHeight', 20)
+    .attr('orient', 'auto')
+  .append('path')
+    .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
 
+  swoopySel.selectAll('path')
+    .filter(function(t){return t.class == 'arrow'})
+    .attr('marker-end', 'url(#arrow)');
 
+  swoopySel.selectAll('path').attr('stroke','white')
+  swoopySel.selectAll('path').attr('fill','none')
 }
+

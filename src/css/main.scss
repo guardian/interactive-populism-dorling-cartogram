@@ -17,7 +17,7 @@
 
 body{background: black;}
 
-.interactive-wrapper{position: absolute; left: 50%;}
+.interactive-wrapper{position: absolute; right: 0%;}
 
 
 .gv-title__line {
@@ -118,6 +118,8 @@ path{
 .stripe-1 {
   
 }
+.annotations-text tspan{font-family:'TE32TextEgyptian-Bold'; font-size:16px;}
+.tspanYellow{color: $highlight-yellow;}
 
 /*@keyframes widen {
   100% {
