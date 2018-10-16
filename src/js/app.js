@@ -39,12 +39,34 @@ var annotations =
   {
     "annWidth": 400,
     "annLenght": 400,
-    "path": "M 167,84 A 69.06 69.06 0 0 1 233,33.999996185302734",
+    "path": "M 222,113 A 40.264 40.264 0 0 1 232.99998474121094,33.999996185302734",
     "class": "arrow",
-    "text": "Nordic countries have a long history on right populism",
+    "text": "Nordic countries along with Denmark have an extended history on right populism",
     "textOffset": [
-      110,
-      97
+      234,
+      92
+    ]
+  },
+  {
+    "annWidth": 400,
+    "annLenght": 400,
+    "path": "M 530,273 A 56.169 56.169 0 0 0 470.0000305175781,231",
+    "class": "arrow",
+    "text": "East countries as Lithuania blah blah blah",
+    "textOffset": [
+      479,
+      292
+    ]
+  },
+  {
+    "annWidth": 400,
+    "annLenght": 400,
+    "path": "M 176,560 A 54.101 54.101 0 0 1 233,504",
+    "class": "arrow",
+    "text": "Italy has seen growing populism in the last XX years",
+    "textOffset": [
+      78,
+      574
     ]
   },
   {
@@ -72,7 +94,7 @@ var annotations =
   {
     "annWidth": 10,
     "annLenght": 10,
-    "path": "M79,75L77,75",
+    "path": "M79,76L76,76",
     "class": "annotation",
     "text": "0",
     "textOffset": [
