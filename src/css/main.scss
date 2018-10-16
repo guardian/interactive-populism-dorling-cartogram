@@ -10,18 +10,26 @@
     margin: 0 !important;
 }
 
-// path {
-//   stroke: #000;
-//   stroke-width: 1px;
-// }
+.map-wrapper{
+    position: relative;
+    float: right;
+    padding:12px;
+    width: 620px;
+    height: 720px;
+}
+
+@media screen and (max-width: 620px){
+   .map-wrapper{width:100%;}
+ }
 
 body{background: black;}
 
-.interactive-wrapper{position: absolute; right: 0%;}
+
+.map-wrapper svg{position:relative; float:right; }
 
 
 .gv-title__line {
-    position: absolute;
+    position: relative;
     z-index: 5;
     padding-left: 10px;
     margin-top: 0px;
@@ -34,7 +42,7 @@ body{background: black;}
     padding-bottom: 24px;
     margin-left: -1px;
     max-width: 400px;
-    color: white;
+    color: $highlight-yellow;
 
 }
 
@@ -44,23 +52,65 @@ body{background: black;}
 }
 
 #wing-hatch--leftshare {
-    stroke: $inverted-orange;
+    stroke: $highlight-yellow;
     stroke-width: 2;
 }
 
 #wing-hatch--othershare {
-    stroke: $gu-darkred;
+    stroke: $highlight-yellow;
     stroke-width: 2;
+}
+
+.charts-wrapper{
+    position:relative;
+    float:left;
+}
+
+.chart-wrapper{
+    stroke-width:2.5px;
+    stroke-linecap:round;
+    position: relative;
+    float: left;
+    margin-right:12px;
+    margin-bottom:12px;
+}
+
+.chart-wrapper svg{
+    padding: 0;
+    margin: 0;
+}
+
+.chart-wrapper .rightLine{
+    stroke: $sport-blue;
+}
+.chart-wrapper .leftLine{
+    stroke: $live-red;
+}
+.chart-wrapper .otherLine{
+    stroke: grey;
+}
+.chart-wrapper .accumLine{
+    stroke: $highlight-yellow;
+}
+
+.chart-wrapper h3{
+    color:white;
+}
+
+.chart-dotted-line{
+    stroke-dasharray: 2;
+    stroke: $neutral-46;
+    stroke-width: 1px;
 }
 
 rect {
     fill: $neutral-20;
 }
 
-g text {
+text {
     @include fs-textSans(1);
     font-size: 12px;
-    fill: $neutral-60;
+    fill: #d5d5d5;
 }
 text.year {
     font-size: 24px;
@@ -68,66 +118,14 @@ text.year {
     fill: #555;
 }
 
-circle {
-    fill: rgba(15,30,150,.25);
-    stroke: #555;
-}
-
-path{
-
-	// stroke:#DaDaDa;
-	// stroke-width:.5;
-}
-
-.rightLine{
-	stroke: rgb(0, 178, 255);
-	stroke-width:2px;
-}
-
-.leftLine{
-	stroke: rgb(255, 78, 54);
-	stroke-width:2px;
-}
-
-.otherLine{
-    stroke: $neutral-20;
-    stroke-width:2px;
-}
-
 .area{
    stroke-width:1px;
    stroke: $neutral-20;
 }
 
-.rightshare{
-    
-}
-
-.leftshare{
-    
-}
-
-.othershare{
-    
-}
-
-
-.stripe-1 {
-  
-}
-.annotations-text tspan{font-family:'TE32TextEgyptian-Bold'; font-size:16px;}
+.annotations-text tspan{font-family:'Guardian Text Sans Web', Arial, sans-serif; font-size:14px;}
 .tspanYellow{color: $highlight-yellow;}
 
 #arrow path{fill:white}
-
-.annotations-text text{fill:white}
-
-/*@keyframes widen {
-  100% {
-    width: 100%;
-  }
-}*/
-
-
 
 
