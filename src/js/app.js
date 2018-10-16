@@ -19,8 +19,8 @@ let width = svgWidth
 let height = svgHeight
 
 let squares = 81;
-let columns = 9;
-let rows = 9;
+let columns = 8;
+let rows = 8;
 let grid = makeGrid(squares,columns, rows, width, height);
 
 var annotations =
@@ -28,60 +28,103 @@ var annotations =
   {
     "annWidth": 100,
     "annLength": 100,
-    "path": "M374,467L374,380",
+    "path": "M339,384L339,366",
     "class": "arrow",
     "text": "Jobbik, Hungary's far right party, obtained in 2014 XX% of share vote",
     "textOffset": [
-      268,
-      486
+      222,
+      399
     ]
   },
   {
     "annWidth": 400,
     "annLenght": 400,
-    "path": "M 301,121 A 71.201 71.201 0 0 0 365,80",
+    "path": "M 167,84 A 69.06 69.06 0 0 1 233,33.999996185302734",
     "class": "arrow",
-    "text": "interactive",
+    "text": "Nordic countries have a long history on right populism",
     "textOffset": [
-      -114,
-      -54
+      110,
+      97
+    ]
+  },
+  {
+    "annWidth": 10,
+    "annLenght": 10,
+    "path": "M1,79L1,76",
+    "class": "annotation",
+    "text": "1992",
+    "textOffset": [
+      0,
+      91
+    ]
+  },
+  {
+    "annWidth": 10,
+    "annLenght": 10,
+    "path": "M76,79L76,76",
+    "class": "annotation",
+    "text": "2018",
+    "textOffset": [
+      51,
+      92
+    ]
+  },
+  {
+    "annWidth": 10,
+    "annLenght": 10,
+    "path": "M79,75L77,75",
+    "class": "annotation",
+    "text": "0",
+    "textOffset": [
+      82,
+      76
+    ]
+  },
+  {
+    "annWidth": 10,
+    "annLenght": 10,
+    "path": "M78,1L76,1",
+    "class": "annotation",
+    "text": "100%",
+    "textOffset": [
+      80,
+      9
     ]
   }
 ]
 
 let europe28 =[];
-europe28[49]="Austria";
-europe28[47]="Belgium";
-europe28[61]="Bulgaria";
-europe28[57]="Switzerland";
-europe28[80]="Cyprus";
-europe28[50]="Czech Republic";
-europe28[40]="Germany";
-europe28[31]="Denmark";
-europe28[65]="Spain";
-europe28[15]="Estonia";
-europe28[6]="Finland";
-europe28[56]="France";
-europe28[29]="United Kingdom";
-europe28[70]="Greece";
-europe28[68]="Croatia";
-europe28[60]="Hungary";
-europe28[27]="Ireland";
-europe28[9]="Iceland";
-europe28[58]="Italy";
-europe28[33]="Lithuania";
-europe28[48]="Luxembourg";
-europe28[24]="Latvia";
-europe28[76]="Malta";
-europe28[39]="Netherlands";
-europe28[4]="Norway";
-europe28[41]="Poland";
-europe28[64]="Portugal";
-europe28[52]="Romania";
-europe28[51]="Slovakia";
-europe28[59]="Slovenia";
-europe28[5]="Sweden";
-
+europe28[0]="Iceland";
+europe28[3]="Norway";
+europe28[4]="Sweden";
+europe28[5]="Finland";
+europe28[13]="Estonia";
+europe28[16]="Ireland";
+europe28[17]="United Kingdom";
+europe28[19]="Denmark";
+europe28[21]="Latvia";
+europe28[26]="Netherlands";
+europe28[27]="Germany";
+europe28[28]="Poland";
+europe28[29]="Lithuania";
+europe28[33]="Belgium";
+europe28[34]="Luxembourg";
+europe28[35]="Austria";
+europe28[36]="Czech Republic";
+europe28[37]="Slovakia";
+europe28[41]="France";
+europe28[42]="Switzerland";
+europe28[43]="Slovenia";
+europe28[44]="Croatia";
+europe28[45]="Hungary";
+europe28[46]="Romania";
+europe28[48]="Portugal";
+europe28[49]="Spain";
+europe28[51]="Italy";
+europe28[54]="Bulgaria";
+europe28[62]="Greece";
+europe28[67]="Malta";
+europe28[71]="Cyprus";
 
 let names = [{name:"Austria", iso3:"AUS"},
 {name:"Belgium", iso3:"BEL"},
@@ -194,9 +237,9 @@ function ready(data){
 
     n.years.forEach(y => {
 
-     let rs = (isNaN(y.totalPopulist)) ? rs = y.totalPopulist.share.rightshare : rs = 0;
-     let ls = (isNaN(y.totalPopulist)) ? ls = y.totalPopulist.share.leftshare : ls = 0;
-     let os = (isNaN(y.totalPopulist)) ? os = y.totalPopulist.share.othershare : os = 0;
+     let rs = (isNaN(y.totalPopulist)) ? rs = y.totalPopulist.rightshare : rs = 0;
+     let ls = (isNaN(y.totalPopulist)) ? ls = y.totalPopulist.leftshare : ls = 0;
+     let os = (isNaN(y.totalPopulist)) ? os = y.totalPopulist.othershare : os = 0;
 
      countryData.push({date:new Date(y.year), rightshare:rs, leftshare:ls, othershare:os})
    })
@@ -266,16 +309,13 @@ function ready(data){
 
   var swoopySel = svg.append('g').attr("class", "annotations-text").call(swoopy)
 
-  
-
-  
-
   swoopySel.selectAll('text')
+  .attr("class", d => d.class)
   //.filter(function(t){return t.class == 'annotation' || t.class == 'arrow'})
   .each(function(d){
     d3.select(this)
       .text('')                        //clear existing text
-      .tspans(d3.wordwrap(d.text, 20), 25) //wrap after 20 char
+      .tspans(d3.wordwrap(d.text, 20), 18) //wrap after 20 char
   })
 
   var markerDefs = svg.append('svg:defs')
@@ -288,13 +328,19 @@ function ready(data){
     .attr('markerHeight', 20)
     .attr('orient', 'auto')
   .append('path')
-    .attr('d', 'M-6.75,-6.75 L 0,0 L -6.75,6.75')
+    .attr('d', 'M-5,-4 L 0,0 L -5,4')
 
   swoopySel.selectAll('path')
     .filter(function(t){return t.class == 'arrow'})
     .attr('marker-end', 'url(#arrow)');
 
   swoopySel.selectAll('path').attr('stroke','white')
+
+  swoopySel.selectAll('path')
+    .filter(function(t){return t.class != 'arrow'})
+    .attr('stroke','grey')
+
+  
   swoopySel.selectAll('path').attr('fill','none')
 }
 

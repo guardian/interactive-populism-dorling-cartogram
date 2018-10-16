@@ -118,11 +118,14 @@ path{
 .stripe-1 {
   
 }
-.annotations-text tspan{font-family:'TE32TextEgyptian-Bold'; font-size:16px;}
+.annotations-text tspan{font-family:'Guardian Text Sans Web', Arial, sans-serif; font-size:14px;}
 .tspanYellow{color: $highlight-yellow;}
 
 #arrow path{fill:white}
 
+
+.annotation tspan{fill:$neutral-46; font-size:12px;}
+.annotation path{fill:none; stroke:$neutral-46;}
 /*@keyframes widen {
   100% {
     width: 100%;
