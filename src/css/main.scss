@@ -34,7 +34,7 @@ body{background: black;}
     padding-bottom: 24px;
     margin-left: -1px;
     max-width: 400px;
-    color: $highlight-yellow;
+    color: white;
 
 }
 
@@ -55,15 +55,12 @@ body{background: black;}
 
 rect {
     fill: $neutral-20;
-    
-    
-
 }
 
-text {
+g text {
     @include fs-textSans(1);
     font-size: 12px;
-    fill: #d5d5d5;
+    fill: $neutral-60;
 }
 text.year {
     font-size: 24px;
@@ -122,6 +119,8 @@ path{
 .tspanYellow{color: $highlight-yellow;}
 
 #arrow path{fill:white}
+
+.annotations-text text{fill:white}
 
 /*@keyframes widen {
   100% {
