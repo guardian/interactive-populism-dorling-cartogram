@@ -1,4 +1,4 @@
-function makeGrid(squares, columns, rows, width, height)
+function makeGrid(columns, rows, width, height)
 {
   let positions = [];
   let heightAccum = 0,
@@ -7,7 +7,7 @@ function makeGrid(squares, columns, rows, width, height)
   squareWidth = parseInt(width / columns),
   squareheight = parseInt(height / rows);
 
-  for (let i = 0; i < squares; i++) {
+  for (let i = 0; i < columns * rows; i++) {
     positions.push({x:widthAccum , y:heightAccum, center:[widthAccum + (width  / columns) / 2, heightAccum + (width / columns) / 2], width:squareWidth, height:squareheight});
 
     widthAccum += squareWidth + 2;
