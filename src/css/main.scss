@@ -64,6 +64,10 @@ body{background: black;}
 .charts-wrapper{
     position:relative;
     float:left;
+
+    @include mq(wide) {
+       max-width:1260px; 
+    }
 }
 
 .chart-wrapper{
@@ -75,6 +79,11 @@ body{background: black;}
     margin-bottom:12px;
 }
 
+.chart-wrapper svg{
+    padding: 0;
+    margin: 0;
+}
+
 .chart-wrapper .rightLine{
     stroke: $sport-blue;
 }
@@ -83,6 +92,9 @@ body{background: black;}
 }
 .chart-wrapper .otherLine{
     stroke: grey;
+}
+.chart-wrapper .accumLine{
+    stroke: $highlight-yellow;
 }
 
 .chart-wrapper h3{
@@ -119,8 +131,5 @@ text.year {
 .tspanYellow{color: $highlight-yellow;}
 
 #arrow path{fill:white}
-
-.annotation tspan{fill:$neutral-46; font-size:12px;}
-.annotation path{fill:none; stroke:$neutral-46;}
 
 

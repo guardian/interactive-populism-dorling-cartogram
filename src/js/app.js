@@ -3,7 +3,7 @@ import * as d3Select from 'd3-selection'
 import textures from 'textures'
 import * as d3Swoopydrag from 'd3-swoopy-drag'
 import * as d3Jetpack from 'd3-jetpack'
-import { annotations } from '../assets/annotations.js'
+import { desktop, mobile } from '../assets/annotations.js?11ab'
 import { makeGrid } from '../assets/Grid.js'
 
 const d3 = Object.assign({}, d3B, d3Select, d3Swoopydrag, d3Jetpack);
@@ -66,12 +66,8 @@ function ready(data){
 
 	nodes.forEach((n) => {
 
-    let countryChart = chartsWrapper.append('div').attr("class", "chart-wrapper " + n.country);
-    let country = names.find(d => d.name == n.id);
-
     let countryName = n.country;
     if(countryName == "United Kingdom")countryName = "UK";
-    //countryChart.append('h3').html(countryName);
 
     let group = d3.select("." + n.country.split(" ").join("-"));
     let rect = group.select("rect");
@@ -79,7 +75,7 @@ function ready(data){
     let marginY = parseInt(rect.attr("transform").split("translate(")[1].split(",")[1].split(")")[0]);
 
     let countryDataArea = [];
-    let countryDataLine = [];
+    
 
     n.years.forEach(y => {
 
@@ -91,25 +87,6 @@ function ready(data){
 
    })
 
-    countryDataLine.push({ id:n.country, values: n.years.map(d=>{
-      let year = d.year;
-      let leftShare;
-      let rightShare;
-      let otherShare;
-
-      if(d.totalPopulist == 0){leftShare = null; rightShare = null; otherShare=null}
-      else {
-        let ls = (d.totalPopulist.share.leftshare == 0) ? leftShare = null : leftShare = d.totalPopulist.share.leftshare;
-        let rs = (d.totalPopulist.share.rightshare == 0) ? rightShare = null : rightShare = d.totalPopulist.share.rightshare;
-        let os = (d.totalPopulist.share.othershare == 0) ? otherShare = null : otherShare = d.totalPopulist.share.othershare;
-        leftShare = ls;
-        rightShare = rs;
-        otherShare = os;
-      }
-
-      return {year:year, leftshare:leftShare, rightshare:rightShare, othershare:otherShare}
-    })})
-
     let rectWidth = parseInt(rect.attr("width"))
     let rectHeight = parseInt(rect.attr("height"))
 
@@ -118,27 +95,6 @@ function ready(data){
 
     let y = d3.scaleLinear()
     .range([rectHeight, 0]).domain([0,100]);
-
-    let x2 = d3.scaleTime().range([0, 120]).domain([1992,2018]),
-    y2 = d3.scaleLinear().range([150, 0]).domain([0,100]);
-
-    let lineRight = d3.line()
-    .curve(d3.curveBasis)
-    .x(d => { return x2(d.year)})
-    .y(d => { return y2(d.rightshare)})
-    .defined(d => { return d.rightshare !== null });
-
-    let lineLeft = d3.line()
-    .curve(d3.curveBasis)
-    .x(d => { return x2(d.year)})
-    .y(d => { return y2(d.leftshare)})
-    .defined(d => { return d.leftshare !== null });
-
-    let lineOther = d3.line()
-    .curve(d3.curveBasis)
-    .x(d => { return x2(d.year)})
-    .y(d => { return y2(d.othershare)})
-    .defined(d => { return d.othershare !== null });
 
     let area = d3.area()
     .curve(d3.curveStep)
@@ -181,50 +137,111 @@ function ready(data){
     .attr("transform", "translate("+ marginX + "," + marginY + ")")
     .style('fill', d => {return `url('#wing-hatch--${d.key}')`});
 
-    let lines = countryChart.append('svg')
-    .attr("width", "120px")
-    .attr("height", "150px")
-    .selectAll(".lines")
-    .data(countryDataLine)
-    .enter()
-    .append('g')
-    .attr('class', "lines")
+    if(n.country != "Malta" && n.country != "Portugal")
+    {
+      let countryChart = chartsWrapper.append('div').attr("class", "chart-wrapper " + n.country);
+      countryChart.append('h3').html(countryName);
+      let countryDataLine = [];
 
-    for (var i = 0; i<=10; i++) {
+      countryDataLine.push({ id:n.country, values: n.years.map(d=>{
+      let year = d.year;
+      let leftShare=0;
+      let rightShare=0;
+      let otherShare=0;
+      let accum=0;
+      
 
-      lines.append("line")
-      .attr("class", "chart-dotted-line")
-      .attr("x1", 0 )
-      .attr("y1", i*15)
-      .attr("x2", 100)
-      .attr("y2", i*15);
+      if(d.totalPopulist == 0){leftShare = null; rightShare = null; otherShare=null}
+      else {
+        let ls = (d.totalPopulist.share.leftshare == 0) ? leftShare = null : leftShare = d.totalPopulist.share.leftshare;
+        let rs = (d.totalPopulist.share.rightshare == 0) ? rightShare = null : rightShare = d.totalPopulist.share.rightshare;
+        let os = (d.totalPopulist.share.othershare == 0) ? otherShare = null : otherShare = d.totalPopulist.share.othershare;
+        leftShare = ls;
+        rightShare = rs;
+        otherShare = os;
+        accum = ls + rs+ os;
+      }
+
+      return {year:year, leftshare:leftShare, rightshare:rightShare, othershare:otherShare, accum:accum}
+      })})
+
+      let x2 = d3.scaleTime().range([0, 120]).domain([1992,2018]),
+      y2 = d3.scaleLinear().range([150, 0]).domain([0,100]);
+
+      let lineRight = d3.line()
+      .curve(d3.curveBasis)
+      .x(d => { return x2(d.year)})
+      .y(d => { return y2(d.rightshare)})
+      .defined(d => { return d.rightshare !== null });
+
+      let lineLeft = d3.line()
+      .curve(d3.curveBasis)
+      .x(d => { return x2(d.year)})
+      .y(d => { return y2(d.leftshare)})
+      .defined(d => { return d.leftshare !== null });
+
+      let lineOther = d3.line()
+      .curve(d3.curveBasis)
+      .x(d => { return x2(d.year)})
+      .y(d => { return y2(d.othershare)})
+      .defined(d => { return d.othershare !== null });
+
+      let lineAccum = d3.line()
+      .curve(d3.curveBasis)
+      .x(d => { return x2(d.year)})
+      .y(d => { return y2(d.accum)})
+      .defined(d => { return d.accum !== null });
+
+      let lines = countryChart.append('svg')
+      .attr("width", "120px")
+      .selectAll(".lines")
+      .data(countryDataLine)
+      .enter()
+      .append('g')
+      .attr('class', "lines")
+
+      for (var i = 0; i<=10; i++) {
+
+        lines.append("line")
+        .attr("class", "chart-dotted-line")
+        .attr("x1", 0 )
+        .attr("y1", i*15)
+        .attr("x2", 120)
+        .attr("y2", i*15);
+      }
+
+      lines
+      .append("path")
+      .attr("class", "rightLine")
+      .attr("d", d => { return lineRight(d.values)})
+      .attr("fill", "none")
+
+      lines
+      .append("path")
+      .attr("class", "leftLine")
+      .attr("d", d => { return lineLeft(d.values)})
+      .attr("fill", "none")
+
+      lines
+      .append("path")
+      .attr("class", "otherLine")
+      .attr("d", d => { return lineOther(d.values)})
+      .attr("fill", "none")
+
+      lines
+      .append("path")
+      .attr("class", "accumLine")
+      .attr("d", d => { return lineAccum(d.values)})
+      .attr("fill", "none")
     }
-
-    lines
-    .append("path")
-    .attr("class", "rightLine")
-    .attr("d", d => { return lineRight(d.values)})
-    .attr("fill", "none")
-
-    lines
-    .append("path")
-    .attr("class", "leftLine")
-    .attr("d", d => { return lineLeft(d.values)})
-    .attr("fill", "none")
-
-    lines
-    .append("path")
-    .attr("class", "otherLine")
-    .attr("d", d => { return lineOther(d.values)})
-    .attr("fill", "none")
-  })
+})
 
 let swoopy = d3.swoopyDrag()
 .x(d => d.annWidth)
 .y(d => d.annLength)
-.draggable(false)
-.annotations(annotations)
-.on("drag", d => window.annotations = annotations)
+.draggable(true)
+.annotations(desktop)
+.on("drag", d => window.annotations = desktop)
 
 let swoopySel = svg.append('g').attr("class", "annotations-text").call(swoopy)
 
@@ -257,7 +274,6 @@ swoopySel.selectAll('path').attr('stroke','white')
 swoopySel.selectAll('path')
 .filter(function(t){return t.class != 'arrow'})
 .attr('stroke','grey')
-
 
 swoopySel.selectAll('path').attr('fill','none')
 }

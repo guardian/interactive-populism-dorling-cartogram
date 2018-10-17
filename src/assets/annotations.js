@@ -1,4 +1,4 @@
-let annotations =
+let desktop =
 [
   {
     "annWidth": 100,
@@ -85,9 +85,24 @@ let annotations =
     "text": "100%",
     "textOffset": [
       80,
-      9
+      11
+    ]
+  }
+];
+
+let mobile =
+[
+  {
+    "annWidth": 100,
+    "annLength": 100,
+    "path": "M339,384L339,366",
+    "class": "arrow",
+    "text": "This is a mobile annotation",
+    "textOffset": [
+      222,
+      399
     ]
   }
 ]
 
-export { annotations};
+export { desktop, mobile }
