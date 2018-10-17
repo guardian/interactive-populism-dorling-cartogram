@@ -71,7 +71,7 @@ function ready(data){
 
     let countryName = n.country;
     if(countryName == "United Kingdom")countryName = "UK";
-    countryChart.append('h3').html(countryName);
+    //countryChart.append('h3').html(countryName);
 
     let group = d3.select("." + n.country.split(" ").join("-"));
     let rect = group.select("rect");
@@ -119,8 +119,8 @@ function ready(data){
     let y = d3.scaleLinear()
     .range([rectHeight, 0]).domain([0,100]);
 
-    let x2 = d3.scaleTime().range([0, 100]).domain([1992,2018]),
-    y2 = d3.scaleLinear().range([100, 0]).domain([0,100]);
+    let x2 = d3.scaleTime().range([0, 120]).domain([1992,2018]),
+    y2 = d3.scaleLinear().range([150, 0]).domain([0,100]);
 
     let lineRight = d3.line()
     .curve(d3.curveBasis)
@@ -183,6 +183,7 @@ function ready(data){
 
     let lines = countryChart.append('svg')
     .attr("width", "120px")
+    .attr("height", "150px")
     .selectAll(".lines")
     .data(countryDataLine)
     .enter()
