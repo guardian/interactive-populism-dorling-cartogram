@@ -176,7 +176,7 @@ function ready(elections){
     .attr("height", totalWidth)
     .attr("class", 'area')
     .attr("transform", "translate("+ marginXTotal + "," + marginYTotal + ")")
-    .style('fill', d => {return `url('#wing-hatch--${'rightshare'}')`});
+    .style('fill', `url('#wing-hatch--${'rightshare'}')`);
 
 
     if(n.country != "Malta" && n.country != "Portugal")
@@ -230,7 +230,9 @@ function ready(elections){
      
 
       d3.select(".map-wrapper.y" + y.year + " svg ." + c.country)
-      .style('fill', "yellow")
+      .style('fill', `url('#wing-hatch--${'rightshare'}')`)
+      .attr("stroke", "black")
+      .attr("stroke-width", 0)
       .style("opacity", +c.totalPopulist.share.totalshare / 100)
 
       /*let country = map.select("." + country)
@@ -277,8 +279,8 @@ function ready(elections){
         .attr("d", path)
         .attr("class", d => {return d.properties.name})
         .attr("fill", "grey")
-        .attr("stroke", "black")
-        .attr("stroke-width", "0.5px")
+        /*.attr("stroke", "black")
+        .attr("stroke-width", "0.5px")*/
 
     return wrapper
   }
