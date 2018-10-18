@@ -3,6 +3,8 @@ import * as d3Select from 'd3-selection'
 import textures from 'textures'
 import * as d3Swoopydrag from 'd3-swoopy-drag'
 import * as d3Jetpack from 'd3-jetpack'
+import * as topojson from 'topojson'
+import europe from '../assets/world-simple.json'
 import { desktop, mobile } from '../assets/annotations.js'
 import { makeGrid } from '../assets/Grid.js'
 import { makeStacked } from '../assets/Stacked.js'
@@ -10,12 +12,15 @@ import { makeLines } from '../assets/Lines.js?1234'
 
 const d3 = Object.assign({}, d3B, d3Select, d3Swoopydrag, d3Jetpack);
 
-const dataURL = "<%= path %>/assets/yearbycountry.json";
+const yearByCountry = "<%= path %>/assets/yearbycountry.json";
+const countryByYear = "<%= path %>/assets/countrybyyear.json";
 
 const isMobile = window.matchMedia('(max-width: 620px)').matches;
 
 const svgCartogram = d3.select(".cartogram-wrapper svg");
 const svgCartogramTotals = d3.select(".cartogram-wrapper.totals svg");
+
+const mapsWrapper = d3.select(".maps-wrapper");
 
 const chartsWrapper = d3.select(".charts-wrapper");
 const defs = svgCartogram.append('defs')
@@ -43,11 +48,7 @@ if(isMobile){
   linesHeight = 120 - cartogramPadding;
 }
 
-
-
 let populists = ['rightshare', 'leftshare', 'othershare'];
-
-
 
 //CARTOGRAM======================================
 
@@ -123,15 +124,17 @@ europeCartogramTotals
 //END CARTOGRAM=====================================
 
 Promise.all([
-  d3.json(dataURL)
+  d3.json(yearByCountry),
+  d3.json(countryByYear)
   ])
 .then(ready)
 
 function ready(elections){
 	
-	let nodes = elections[0];
+	let counties = elections[0];
+  let years = elections[1];
 
-	nodes.forEach((n) => {
+	counties.forEach((n) => {
 
     let countryName = n.country;
     if(countryName == "United Kingdom")countryName = "UK";
@@ -141,8 +144,6 @@ function ready(elections){
 
     let groupTotal = d3.select(".cartogram-wrapper.totals ." + n.country.split(" ").join("-"));
     let rectTotal = group.select("rect");
-
-    console.log("." + n.country.split(" ").join("-"), group.node())
     let rectWidth = parseInt(rect.attr("width"));
     let rectHeight = parseInt(rect.attr("height"));
     let marginX = parseInt(rect.attr("transform").split("translate(")[1].split(",")[0]);
@@ -211,44 +212,109 @@ function ready(elections){
     }
 })
 
-/*let swoopy = d3.swoopyDrag()
-.x(d => d.annWidth)
-.y(d => d.annLength)
-.draggable(true)
-.annotations(desktop)
-.on("drag", d => window.annotations = desktop)
+  const mapWidth = 120;
+  const mapHeight = 120;
 
-let swoopySel = svgCartogram.append('g').attr("class", "annotations-text").call(swoopy)
+  years.forEach(y => {
+     console.log(y)
+    let mapWrapper = mapsWrapper.append('div').attr("class", "map-wrapper y" + y.year);
+    let mapSvg = mapWrapper.append('svg');
 
-swoopySel.selectAll('text')
-.attr("class", d => d.class)
-.each(function(d){
-  d3.select(this)
-      .text('')                        //clear existing text
-      .tspans(d3.wordwrap(d.text, 20), 18) //wrap after 20 char
+    mapSvg.attr("width", mapWidth)
+    mapSvg.attr("height", mapHeight)
+
+    let map = makeMap(mapSvg,mapWidth,mapHeight);
+
+    y.countries.forEach( c => {
+
+     
+
+      d3.select(".map-wrapper.y" + y.year + " svg ." + c.country)
+      .style('fill', "yellow")
+      .style("opacity", +c.totalPopulist.share.totalshare / 100)
+
+      /*let country = map.select("." + country)
+      country
+      .attr('fill', "yellow")
+      .style("opacity", +c.totalPopulist.share.totalshare / 100)*/
     })
 
-let markerDefs = svgCartogram.append('svg:defs')
-.attr('id', "markerDefs");
+  })
 
-markerDefs.append('marker')
-.attr('id', 'arrow')
-.attr('viewBox', '-10 -10 20 20')
-.attr('markerWidth', 20)
-.attr('markerHeight', 20)
-.attr('orient', 'auto')
-.append('path')
-.attr('d', 'M-5,-4 L 0,0 L -5,4')
 
-swoopySel.selectAll('path')
-.filter(function(t){return t.class == 'arrow'})
-.attr('marker-end', 'url(#arrow)');
+  function makeMap(wrapper, mapWidth, mapheight)
+  {
+    let projection = d3.geoMercator()
+        .center([13, 52])
+        .translate([mapWidth / 2, mapheight / 2])
+        .scale(145)
 
-swoopySel.selectAll('path').attr('stroke','white')
+    let path = d3.geoPath()
+        .projection(projection);
 
-swoopySel.selectAll('path')
-.filter(function(t){return t.class != 'arrow'})
-.attr('stroke','grey')
+      wrapper
+            .append("path")
+            .datum(topojson.feature(europe, europe.objects.ne_10m_admin_0_map_subunits))
+            .attr("d", path)
+            .attr("fill", "grey")
 
-swoopySel.selectAll('path').attr('fill','none')*/
+     /* wrapper
+            .append("path")
+            .datum(topojson.mesh(europe, europe.objects.ne_10m_admin_0_map_subunits, function(a, b) { return a !== b; }))
+            .attr("stroke", "black")
+            .attr("d", path);
+
+      wrapper
+            .append("path")
+            .datum(topojson.merge(europe, europe.objects.ne_10m_admin_0_map_subunits.geometries))
+            .attr("d", path)
+            .attr("fill", "grey");*/
+
+        wrapper
+        .selectAll("path")
+        .data(topojson.feature(europe, europe.objects.ne_10m_admin_0_map_subunits).features)
+        .enter().append("path")
+        .attr("d", path)
+        .attr("class", d => {return d.properties.name})
+        .attr("fill", "grey")
+        .attr("stroke", "black")
+        .attr("stroke-width", "0.5px")
+
+    return wrapper
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
