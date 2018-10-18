@@ -6,7 +6,7 @@ import * as d3Jetpack from 'd3-jetpack'
 import { desktop, mobile } from '../assets/annotations.js'
 import { makeGrid } from '../assets/Grid.js'
 import { makeStacked } from '../assets/Stacked.js'
-import { makeLines } from '../assets/Lines.js?1234'
+import { makeLines } from '../assets/Lines.js'
 
 const d3 = Object.assign({}, d3B, d3Select, d3Swoopydrag, d3Jetpack);
 
