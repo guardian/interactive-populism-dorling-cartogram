@@ -226,19 +226,11 @@ function ready(elections){
     let map = makeMap(mapSvg,mapWidth,mapHeight);
 
     y.countries.forEach( c => {
-
-     
-
-      d3.select(".map-wrapper.y" + y.year + " svg ." + c.country)
+      d3.selectAll(".map-wrapper.y" + y.year + " svg ." + c.country.split(" ").join("."))
       .style('fill', `url('#wing-hatch--${'rightshare'}')`)
       .attr("stroke", "black")
       .attr("stroke-width", 0)
       .style("opacity", +c.totalPopulist.share.totalshare / 100)
-
-      /*let country = map.select("." + country)
-      country
-      .attr('fill', "yellow")
-      .style("opacity", +c.totalPopulist.share.totalshare / 100)*/
     })
 
   })
@@ -260,24 +252,12 @@ function ready(elections){
             .attr("d", path)
             .attr("fill", "grey")
 
-     /* wrapper
-            .append("path")
-            .datum(topojson.mesh(europe, europe.objects.ne_10m_admin_0_map_subunits, function(a, b) { return a !== b; }))
-            .attr("stroke", "black")
-            .attr("d", path);
-
-      wrapper
-            .append("path")
-            .datum(topojson.merge(europe, europe.objects.ne_10m_admin_0_map_subunits.geometries))
-            .attr("d", path)
-            .attr("fill", "grey");*/
-
         wrapper
         .selectAll("path")
         .data(topojson.feature(europe, europe.objects.ne_10m_admin_0_map_subunits).features)
         .enter().append("path")
         .attr("d", path)
-        .attr("class", d => {return d.properties.name})
+        .attr("class", d => {return d.properties.admin})
         .attr("fill", "grey")
         /*.attr("stroke", "black")
         .attr("stroke-width", "0.5px")*/
