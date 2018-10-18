@@ -46,6 +46,11 @@ body{background: black;}
 
 }
 
+#wing-hatch{
+    stroke: $highlight-yellow;
+    stroke-width: 2;
+}
+
 #wing-hatch--rightshare {
     stroke: $highlight-yellow;
     stroke-width: 2;
@@ -131,5 +136,10 @@ text.year {
 .tspanYellow{color: $highlight-yellow;}
 
 #arrow path{fill:white}
+
+.cartogram-wrapper{
+    position:relative;
+    float:left;
+}
 
 

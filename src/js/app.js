@@ -15,12 +15,18 @@ const dataURL = "<%= path %>/assets/yearbycountry.json";
 const isMobile = window.matchMedia('(max-width: 620px)').matches;
 
 const svgCartogram = d3.select(".cartogram-wrapper svg");
+const svgCartogramTotals = d3.select(".cartogram-wrapper.totals svg");
+
+const chartsWrapper = d3.select(".charts-wrapper");
+const defs = svgCartogram.append('defs')
 
 let cartogramPadding = 10;
 let cartogramWidth = 620 - cartogramPadding;
 let cartogramHeight = 700 - cartogramPadding;
 svgCartogram.attr("width" , 620)
 svgCartogram.attr("height" , 700)
+svgCartogramTotals.attr("width" , 620)
+svgCartogramTotals.attr("height" , 700)
 
 let linesWidth = 120 - cartogramPadding;
 let linesHeight = 120 - cartogramPadding;
@@ -30,16 +36,14 @@ if(isMobile){
   cartogramHeight = ( window.innerWidth * 850 / 620 );
   svgCartogram.attr("width" , window.innerWidth)
   svgCartogram.attr("height" , window.innerWidth * 850 / 620)
+  svgCartogramTotals.attr("width" , window.innerWidth)
+  svgCartogramTotals.attr("height" , window.innerWidth * 850 / 620)
 
   linesWidth = (window.innerWidth / 2) - 20;
   linesHeight = 120 - cartogramPadding;
 }
 
-console.log(linesWidth)
 
-const chartsWrapper = d3.select(".charts-wrapper");
-
-const defs = svgCartogram.append('defs')
 
 let populists = ['rightshare', 'leftshare', 'othershare'];
 
@@ -69,6 +73,7 @@ else
 }
 
 let grid = makeGrid(columns, rows,cartogramWidth, cartogramHeight);
+let grid2 = makeGrid(columns, rows,cartogramWidth, cartogramHeight);
 
 let europeCartogram = svgCartogram.selectAll('rect')
 .data(grid)
@@ -85,6 +90,28 @@ europeCartogram
 .attr("height" ,cartogramWidth  / columns)
 
 europeCartogram
+.append('text')
+.attr("transform" , (d) => {return "translate(" + (d.x + 5) + "," + d.y + ")"} )
+.attr('text-anchor', 'start')
+.attr('dy', '1.5em')
+.attr('dx', '.2em')
+.text( (d,i) => { let country = names.find(n => n.name.split(" ").join("-") == classNames[i]);  return country.iso3})
+
+let europeCartogramTotals = svgCartogramTotals.selectAll('rect')
+.data(grid)
+.enter()
+.filter((d,i) => {if(europe31[i] != undefined){classNames.push(europe31[i].split(" ").join("-"))}; return europe31[i] != undefined})
+.append("g")
+.attr("class", (d,i) => {return classNames[i]});
+
+europeCartogramTotals
+.append("rect")
+.attr("class", (d,i) => {let country = names.find(n => n.name.split(" ").join("-") == classNames[i]); return country.border})
+.attr("transform" , (d) => {return "translate(" + d.x + "," + d.y + ")"} )
+.attr("width" ,cartogramWidth  / columns)
+.attr("height" ,cartogramWidth  / columns)
+
+europeCartogramTotals
 .append('text')
 .attr("transform" , (d) => {return "translate(" + (d.x + 5) + "," + d.y + ")"} )
 .attr('text-anchor', 'start')
@@ -109,8 +136,13 @@ function ready(elections){
     let countryName = n.country;
     if(countryName == "United Kingdom")countryName = "UK";
 
-    let group = d3.select("." + n.country.split(" ").join("-"));
+    let group = d3.select(".cartogram-wrapper ." + n.country.split(" ").join("-"));
     let rect = group.select("rect");
+
+    let groupTotal = d3.select(".cartogram-wrapper.totals ." + n.country.split(" ").join("-"));
+    let rectTotal = group.select("rect");
+
+    console.log("." + n.country.split(" ").join("-"), group.node())
     let rectWidth = parseInt(rect.attr("width"));
     let rectHeight = parseInt(rect.attr("height"));
     let marginX = parseInt(rect.attr("transform").split("translate(")[1].split(",")[0]);
@@ -124,11 +156,26 @@ function ready(elections){
      let ls = (isNaN(y.totalPopulist)) ? ls = y.totalPopulist.share.leftshare : ls = 0;
      let os = (isNaN(y.totalPopulist)) ? os = y.totalPopulist.share.othershare : os = 0;
 
-     countryDataArea.push({date:new Date(y.year), rightshare:rs, leftshare:ls, othershare:os});
+     countryDataArea.push({date:new Date(+y.year+1, 0, 0), rightshare:rs, leftshare:ls, othershare:os});
 
    })
-
+    
     makeStacked(rectWidth, rectWidth, [1992,2018], [0,100], countryDataArea, group, populists, defs, marginX, marginY);
+
+    let data2018 = countryDataArea.slice(countryDataArea.length -1)[0];
+
+    let total2018 = data2018.leftshare + data2018.rightshare + data2018.othershare;
+
+    let totalWidth = rectWidth * total2018 / 100;
+    let marginXTotal = parseInt(rectTotal.attr("transform").split("translate(")[1].split(",")[0]) + rectWidth - totalWidth;
+    let marginYTotal = parseInt(rectTotal.attr("transform").split("translate(")[1].split(",")[1].split(")")[0]) + rectHeight - totalWidth;
+
+    groupTotal.append("rect")
+    .attr("width", totalWidth)
+    .attr("height", totalWidth)
+    .attr("class", 'area')
+    .attr("transform", "translate("+ marginXTotal + "," + marginYTotal + ")")
+    .style('fill', d => {return `url('#wing-hatch--${'rightshare'}')`});
 
 
     if(n.country != "Malta" && n.country != "Portugal")
