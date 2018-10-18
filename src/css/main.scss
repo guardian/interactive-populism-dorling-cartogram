@@ -10,17 +10,17 @@
     margin: 0 !important;
 }
 
-.map-wrapper{
-    position: relative;
-    float: right;
-    padding:12px;
-    width: 620px;
-    height: 720px;
+.maps-wrapper{
+    float:left;
+    position:relative;
+    max-width:860px;
 }
 
-@media screen and (max-width: 620px){
-   .map-wrapper{width:100%;}
- }
+.map-wrapper{
+    position: relative;
+    float: left;
+    padding:6px
+}
 
 body{background: black;}
 
@@ -44,6 +44,11 @@ body{background: black;}
     max-width: 400px;
     color: $highlight-yellow;
 
+}
+
+#wing-hatch{
+    stroke: $highlight-yellow;
+    stroke-width: 2;
 }
 
 #wing-hatch--rightshare {
@@ -131,5 +136,10 @@ text.year {
 .tspanYellow{color: $highlight-yellow;}
 
 #arrow path{fill:white}
+
+.cartogram-wrapper{
+    position:relative;
+    float:left;
+}
 
 

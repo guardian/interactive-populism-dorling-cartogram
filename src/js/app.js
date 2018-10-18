@@ -3,6 +3,8 @@ import * as d3Select from 'd3-selection'
 import textures from 'textures'
 import * as d3Swoopydrag from 'd3-swoopy-drag'
 import * as d3Jetpack from 'd3-jetpack'
+import * as topojson from 'topojson'
+import europe from '../assets/world-simple.json'
 import { desktop, mobile } from '../assets/annotations.js'
 import { makeGrid } from '../assets/Grid.js'
 import { makeStacked } from '../assets/Stacked.js'
@@ -10,17 +12,26 @@ import { makeLines } from '../assets/Lines.js'
 
 const d3 = Object.assign({}, d3B, d3Select, d3Swoopydrag, d3Jetpack);
 
-const dataURL = "<%= path %>/assets/yearbycountry.json";
+const yearByCountry = "<%= path %>/assets/yearbycountry.json";
+const countryByYear = "<%= path %>/assets/countrybyyear.json";
 
 const isMobile = window.matchMedia('(max-width: 620px)').matches;
 
 const svgCartogram = d3.select(".cartogram-wrapper svg");
+const svgCartogramTotals = d3.select(".cartogram-wrapper.totals svg");
+
+const mapsWrapper = d3.select(".maps-wrapper");
+
+const chartsWrapper = d3.select(".charts-wrapper");
+const defs = svgCartogram.append('defs')
 
 let cartogramPadding = 10;
 let cartogramWidth = 620 - cartogramPadding;
 let cartogramHeight = 700 - cartogramPadding;
 svgCartogram.attr("width" , 620)
 svgCartogram.attr("height" , 700)
+svgCartogramTotals.attr("width" , 620)
+svgCartogramTotals.attr("height" , 700)
 
 let linesWidth = 120 - cartogramPadding;
 let linesHeight = 120 - cartogramPadding;
@@ -30,20 +41,14 @@ if(isMobile){
   cartogramHeight = ( window.innerWidth * 850 / 620 );
   svgCartogram.attr("width" , window.innerWidth)
   svgCartogram.attr("height" , window.innerWidth * 850 / 620)
+  svgCartogramTotals.attr("width" , window.innerWidth)
+  svgCartogramTotals.attr("height" , window.innerWidth * 850 / 620)
 
   linesWidth = (window.innerWidth / 2) - 20;
   linesHeight = 120 - cartogramPadding;
 }
 
-console.log(linesWidth)
-
-const chartsWrapper = d3.select(".charts-wrapper");
-
-const defs = svgCartogram.append('defs')
-
 let populists = ['rightshare', 'leftshare', 'othershare'];
-
-
 
 //CARTOGRAM======================================
 
@@ -69,6 +74,7 @@ else
 }
 
 let grid = makeGrid(columns, rows,cartogramWidth, cartogramHeight);
+let grid2 = makeGrid(columns, rows,cartogramWidth, cartogramHeight);
 
 let europeCartogram = svgCartogram.selectAll('rect')
 .data(grid)
@@ -92,25 +98,52 @@ europeCartogram
 .attr('dx', '.2em')
 .text( (d,i) => { let country = names.find(n => n.name.split(" ").join("-") == classNames[i]);  return country.iso3})
 
+let europeCartogramTotals = svgCartogramTotals.selectAll('rect')
+.data(grid)
+.enter()
+.filter((d,i) => {if(europe31[i] != undefined){classNames.push(europe31[i].split(" ").join("-"))}; return europe31[i] != undefined})
+.append("g")
+.attr("class", (d,i) => {return classNames[i]});
+
+europeCartogramTotals
+.append("rect")
+.attr("class", (d,i) => {let country = names.find(n => n.name.split(" ").join("-") == classNames[i]); return country.border})
+.attr("transform" , (d) => {return "translate(" + d.x + "," + d.y + ")"} )
+.attr("width" ,cartogramWidth  / columns)
+.attr("height" ,cartogramWidth  / columns)
+
+europeCartogramTotals
+.append('text')
+.attr("transform" , (d) => {return "translate(" + (d.x + 5) + "," + d.y + ")"} )
+.attr('text-anchor', 'start')
+.attr('dy', '1.5em')
+.attr('dx', '.2em')
+.text( (d,i) => { let country = names.find(n => n.name.split(" ").join("-") == classNames[i]);  return country.iso3})
+
 
 //END CARTOGRAM=====================================
 
 Promise.all([
-  d3.json(dataURL)
+  d3.json(yearByCountry),
+  d3.json(countryByYear)
   ])
 .then(ready)
 
 function ready(elections){
 	
-	let nodes = elections[0];
+	let counties = elections[0];
+  let years = elections[1];
 
-	nodes.forEach((n) => {
+	counties.forEach((n) => {
 
     let countryName = n.country;
     if(countryName == "United Kingdom")countryName = "UK";
 
-    let group = d3.select("." + n.country.split(" ").join("-"));
+    let group = d3.select(".cartogram-wrapper ." + n.country.split(" ").join("-"));
     let rect = group.select("rect");
+
+    let groupTotal = d3.select(".cartogram-wrapper.totals ." + n.country.split(" ").join("-"));
+    let rectTotal = group.select("rect");
     let rectWidth = parseInt(rect.attr("width"));
     let rectHeight = parseInt(rect.attr("height"));
     let marginX = parseInt(rect.attr("transform").split("translate(")[1].split(",")[0]);
@@ -124,11 +157,26 @@ function ready(elections){
      let ls = (isNaN(y.totalPopulist)) ? ls = y.totalPopulist.share.leftshare : ls = 0;
      let os = (isNaN(y.totalPopulist)) ? os = y.totalPopulist.share.othershare : os = 0;
 
-     countryDataArea.push({date:new Date(y.year), rightshare:rs, leftshare:ls, othershare:os});
+     countryDataArea.push({date:new Date(+y.year+1, 0, 0), rightshare:rs, leftshare:ls, othershare:os});
 
    })
-
+    
     makeStacked(rectWidth, rectWidth, [1992,2018], [0,100], countryDataArea, group, populists, defs, marginX, marginY);
+
+    let data2018 = countryDataArea.slice(countryDataArea.length -1)[0];
+
+    let total2018 = data2018.leftshare + data2018.rightshare + data2018.othershare;
+
+    let totalWidth = rectWidth * total2018 / 100;
+    let marginXTotal = parseInt(rectTotal.attr("transform").split("translate(")[1].split(",")[0]) + rectWidth - totalWidth;
+    let marginYTotal = parseInt(rectTotal.attr("transform").split("translate(")[1].split(",")[1].split(")")[0]) + rectHeight - totalWidth;
+
+    groupTotal.append("rect")
+    .attr("width", totalWidth)
+    .attr("height", totalWidth)
+    .attr("class", 'area')
+    .attr("transform", "translate("+ marginXTotal + "," + marginYTotal + ")")
+    .style('fill', `url('#wing-hatch--${'rightshare'}')`);
 
 
     if(n.country != "Malta" && n.country != "Portugal")
@@ -164,44 +212,91 @@ function ready(elections){
     }
 })
 
-/*let swoopy = d3.swoopyDrag()
-.x(d => d.annWidth)
-.y(d => d.annLength)
-.draggable(true)
-.annotations(desktop)
-.on("drag", d => window.annotations = desktop)
+  const mapWidth = 120;
+  const mapHeight = 120;
 
-let swoopySel = svgCartogram.append('g').attr("class", "annotations-text").call(swoopy)
+  years.forEach(y => {
+     console.log(y)
+    let mapWrapper = mapsWrapper.append('div').attr("class", "map-wrapper y" + y.year);
+    let mapSvg = mapWrapper.append('svg');
 
-swoopySel.selectAll('text')
-.attr("class", d => d.class)
-.each(function(d){
-  d3.select(this)
-      .text('')                        //clear existing text
-      .tspans(d3.wordwrap(d.text, 20), 18) //wrap after 20 char
+    mapSvg.attr("width", mapWidth)
+    mapSvg.attr("height", mapHeight)
+
+    let map = makeMap(mapSvg,mapWidth,mapHeight);
+
+    y.countries.forEach( c => {
+      d3.selectAll(".map-wrapper.y" + y.year + " svg ." + c.country.split(" ").join("."))
+      .style('fill', `url('#wing-hatch--${'rightshare'}')`)
+      .attr("stroke", "black")
+      .attr("stroke-width", 0)
+      .style("opacity", +c.totalPopulist.share.totalshare / 100)
     })
 
-let markerDefs = svgCartogram.append('svg:defs')
-.attr('id', "markerDefs");
+  })
 
-markerDefs.append('marker')
-.attr('id', 'arrow')
-.attr('viewBox', '-10 -10 20 20')
-.attr('markerWidth', 20)
-.attr('markerHeight', 20)
-.attr('orient', 'auto')
-.append('path')
-.attr('d', 'M-5,-4 L 0,0 L -5,4')
 
-swoopySel.selectAll('path')
-.filter(function(t){return t.class == 'arrow'})
-.attr('marker-end', 'url(#arrow)');
+  function makeMap(wrapper, mapWidth, mapheight)
+  {
+    let projection = d3.geoMercator()
+        .center([13, 52])
+        .translate([mapWidth / 2, mapheight / 2])
+        .scale(145)
 
-swoopySel.selectAll('path').attr('stroke','white')
+    let path = d3.geoPath()
+        .projection(projection);
 
-swoopySel.selectAll('path')
-.filter(function(t){return t.class != 'arrow'})
-.attr('stroke','grey')
+      wrapper
+            .append("path")
+            .datum(topojson.feature(europe, europe.objects.ne_10m_admin_0_map_subunits))
+            .attr("d", path)
+            .attr("fill", "grey")
 
-swoopySel.selectAll('path').attr('fill','none')*/
+        wrapper
+        .selectAll("path")
+        .data(topojson.feature(europe, europe.objects.ne_10m_admin_0_map_subunits).features)
+        .enter().append("path")
+        .attr("d", path)
+        .attr("class", d => {return d.properties.admin})
+        .attr("fill", "grey")
+        /*.attr("stroke", "black")
+        .attr("stroke-width", "0.5px")*/
+
+    return wrapper
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
