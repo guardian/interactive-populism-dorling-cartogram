@@ -1,8 +1,10 @@
 import * as d3 from 'd3'
+import textures from 'textures'
 
 
 function makeStacked(rectWidth, rectHeight, domainX, domainY, data, group, populists, defs, marginX, marginY)
 {
+  let parseYear = d3.timeParse("%Y");
 
 	let x = d3.scaleTime()
   .range([0,rectWidth]).domain(domainX);
@@ -21,23 +23,30 @@ function makeStacked(rectWidth, rectHeight, domainX, domainY, data, group, popul
   .keys(populists)
   .offset(d3.stackOffsetNone);
 
-  let wingPattern
 
-  populists.forEach(d => {
+  if(group.node().getAttributeNode("class").value == "area-group-stroke")
+  {
+    let t = textures.lines()
+          .size(4)
+          .strokeWidth(1)
+          .stroke("#DADADA");
 
-    wingPattern = defs
-    .append('pattern')
-    .attr('id', 'wing-hatch--' + d)
-    .attr('class', 'wing-hatch')
-    .attr('patternUnits', 'userSpaceOnUse')
-    .attr('width', 4)
-    .attr('height', 4)
+    group.call(t);
 
-    .append('path')
-    .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
-    .attr('class', 'wing-hatch-stroke')
-
-  })
+    group.append('g').selectAll(".shade")
+    .data(data)
+    .enter().append("rect")
+    .filter(d => d.cabinet)
+    .attr("class", "shade")
+    .attr("x", function (d) {
+        return x(d.date.getFullYear());
+    })
+    .attr("width", rectWidth / 26)
+    .attr("y", marginY)
+    .attr("height",rectHeight)
+    .style("fill", t.url());
+  }
+  
 
   let wings = group.selectAll(".wing")
   .data(stack(data))
@@ -50,6 +59,7 @@ function makeStacked(rectWidth, rectHeight, domainX, domainY, data, group, popul
   .attr("d", area)
   .attr('class', function(d) { return "area " + d.key; })
   .attr("transform", "translate("+ marginX + "," + marginY + ")")
-  .style('fill', d => {return `url('#wing-hatch--${d.key}')`});
+  //.style('fill', d => {return `url('#wing-hatch--${d.key}')`});
+  //.style('fill', d => {return `url('#wing-hatch--${d.key}')`});
 }
 export { makeStacked }
