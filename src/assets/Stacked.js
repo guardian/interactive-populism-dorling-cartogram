@@ -29,7 +29,7 @@ function makeStacked(rectWidth, rectHeight, domainX, domainY, data, group, popul
     let t = textures.lines()
           .size(4)
           .strokeWidth(1)
-          .stroke("#DADADA");
+          .stroke("#dadada");
 
     group.call(t);
 

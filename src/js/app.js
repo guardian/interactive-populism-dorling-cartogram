@@ -6,7 +6,7 @@ import * as topojson from 'topojson'
 import europe from '../assets/world-simple.json'
 import { desktop, mobile } from '../assets/annotations.js'
 import { makeGrid } from '../assets/Grid.js'
-import { makeStacked } from '../assets/Stacked.js?49'
+import { makeStacked } from '../assets/Stacked.js'
 import { makeLines } from '../assets/Lines.js'
 
 const d3 = Object.assign({}, d3B, d3Select, d3Swoopydrag, d3Jetpack);
@@ -221,7 +221,8 @@ function ready(elections){
 
         if(n.country == "Austria")
         {
-          if(i > 0)areaGroupLines.append("text").html(70 - (i * 10)).attr("transform", "translate("+ 220 + "," + ((i * (210 / 7))) + ")")
+          if(i > 1)areaGroupLines.append("text").html(70 - (i * 10)).attr("transform", "translate("+ 215 + "," + ((i * (210 / 7))) + ")")
+          else if(i == 1)areaGroupLines.append("text").html(70 - (i * 10) + "%").attr("transform", "translate("+ 215 + "," + ((i * (210 / 7))) + ")")
         }
         
       }
