@@ -22,7 +22,7 @@
     padding:6px
 }
 
-body{background: black;}
+body{background: #F4F0EF;}
 
 
 .map-wrapper svg{position:relative; float:right; }
@@ -54,6 +54,7 @@ body{background: black;}
 #wing-hatch--rightshare {
     stroke: $highlight-yellow;
     stroke-width: 2;
+    //fill:#506697;
 }
 
 #wing-hatch--leftshare {
@@ -64,6 +65,34 @@ body{background: black;}
 #wing-hatch--othershare {
     stroke: $highlight-yellow;
     stroke-width: 2;
+}
+
+.area-group-fill .area.rightshare{
+    fill:#506697;
+}
+
+.area-group-fill .area.leftshare{
+    fill:#ef485e;
+}
+
+.area-group-fill .area.othershare{
+    fill:white;
+}
+
+.area-group-stroke .area.rightshare{
+    stroke:black;
+    stroke-width:2px;
+    fill:none;
+}
+
+.area-group-stroke .area.leftshare{
+    stroke:black;
+    stroke-width:2px;
+    fill:none;
+}
+
+.area-group-stroke .area.othershare{
+    fill:none;
 }
 
 .charts-wrapper{
@@ -103,13 +132,20 @@ body{background: black;}
 }
 
 .chart-wrapper h3{
-    color:white;
+    color:black;
+    margin:0;
 }
 
 .chart-dotted-line{
-    stroke-dasharray: 2;
-    stroke: $neutral-46;
+    stroke-dasharray: 0 2.5;
+    stroke: #F4F0EF;
     stroke-width: 1px;
+    stroke-linecap:"round";
+}
+
+.chart-dotted-line.l7{
+    stroke: #000;
+    stroke-dasharray: none;
 }
 
 rect {
@@ -127,10 +163,10 @@ text.year {
     fill: #555;
 }
 
-.area{
+/* .area{
    stroke-width:1px;
    stroke: $neutral-20;
-}
+} */
 
 .annotations-text tspan{font-family:'Guardian Text Sans Web', Arial, sans-serif; font-size:14px;}
 .tspanYellow{color: $highlight-yellow;}
@@ -141,5 +177,40 @@ text.year {
     position:relative;
     float:left;
 }
+.area-charts-wrapper .chart-wrapper{
+    padding:0;
+    margin:0;
+}
+.area-charts-wrapper{
+    width:100%;
+}
+.area-charts-wrapper .chart-wrapper svg{
+    width:240px;
+    height:240px;
+}
 
+.area-group-lines text{
+    font-family: "Guardian Headline","Guardian Headline Full","Guardian Egyptian Web",Georgia,serif;
+    fill: black;
+}
+.countries-wrapper{
+    width:100%;
+    float:left;
+    position:relative;
+}
+
+rect[data-popgov="true"] {
+    fill: grey;
+    stroke: none;
+    z-index:-100;
+}
+
+rect[data-popgov="false"] {
+    fill: none;
+}
+
+#wing-hatch{
+    stroke: $highlight-yellow;
+    stroke-width: 2;
+}
 
