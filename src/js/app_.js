@@ -22,7 +22,6 @@ let margin = {top: 0, right: 0, bottom: 0, left: 0},
     height = 600 - margin.top - margin.bottom,
     padding = 3;
 
-
 let projection = d3.geoMercator()
 .center([23.106111,53.5775])
 .scale(500)

@@ -182,11 +182,10 @@ text.year {
     margin:0;
 }
 .area-charts-wrapper{
-    width:100%;
+    //width:100%;
 }
-.area-charts-wrapper .chart-wrapper svg{
-    width:240px;
-    height:240px;
+.area-charts-wrapper .chart-wrapper{
+   width:auto;
 }
 
 .area-group-lines text{
