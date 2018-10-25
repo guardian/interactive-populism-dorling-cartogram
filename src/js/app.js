@@ -11,6 +11,7 @@ const yearByCountry = "<%= path %>/assets/yearbycountry.json";
 let isMobile = window.matchMedia('(max-width: 619px)').matches;
 
 let svgWidth
+let w = 170;
 
 let svgHeight = 150;
 
@@ -18,13 +19,13 @@ let padding = 30;
 
 if(isMobile)
 {
-  svgWidth = window.innerWidth - padding;
+  svgWidth = window.innerWidth - padding - 10;
 }
 else
 {
-  svgWidth = 205;
+  svgWidth = 170;
 }
- 
+
 
 const populists = ['rightshare', 'leftshare', 'othershare'];
 
@@ -106,7 +107,7 @@ function ready(elections){
       let areaGroupStroke = areaGroup.append('g').attr("class", "area-group-stroke");
 
       makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countryDataArea, areaGroupFill, populists, padding, padding);
-      makeLines(areaGroupLines, n.country, svgWidth, svgHeight)
+      makeLines(areaGroupLines, countryName, svgWidth, svgHeight)
       makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countryDataArea, areaGroupStroke, populists, padding, padding);
 
       if(countryName == "Austria")
@@ -147,19 +148,15 @@ function ready(elections){
         .attr("width", "50px")
         .html("goverment");
 
+      }
 
-        if(isMobile)
-        {
-          svgWidth = window.innerWidth - padding;
-
-          d3.select(".area-group-annotation").style("transform", "translate(" + ((svgWidth/2) - 10 )+ "px, 30px)")
-        }
-        else
-        {
-          svgWidth = 200;
-
-          d3.select(".area-group-annotation").style("transform", "translate(69px, 30px)")
-        }
+      if(isMobile)
+      {
+        d3.select(".area-group-annotation").style("transform", "translate(" + ((svgWidth/2) - 10 )+ "px, 30px)")
+      }
+      else
+      {
+        d3.select(".area-group-annotation").style("transform", "translate(49px, 30px)")
       }
       
     }
@@ -173,48 +170,48 @@ function ready(elections){
 
 function resize()
 {
-  
+
   isMobile = window.matchMedia('(max-width: 620px)').matches;
 
 
 
-    d3.map(countryGroups, g => {
+  d3.map(countryGroups, g => {
 
-     
 
-      if(countriesData[g.country])
+
+    if(countriesData[g.country])
+    {
+      let countryGroup = g.group;
+      let country = g.country.replace(' ', "-");
+
+      if(isMobile)
       {
-        let countryGroup = g.group;
-        let country = g.country.replace(' ', "-");
 
-        if(isMobile)
-        {
+        svgWidth = window.innerWidth - padding - 10;
 
-          svgWidth = window.innerWidth - padding;
+        d3.select(".area-group-annotation").style("transform", "translate(" + ((svgWidth/2) - 10 ) + "px, 30px)")
 
-          d3.select(".area-group-annotation").style("transform", "translate(" + ((svgWidth/2) - 10 ) + "px, 30px)")
+        d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg").attr("width", svgWidth + padding)
 
-          d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg").attr("width", svgWidth + padding)
-
-          makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-fill"), populists, padding, padding);
-          makeLines( d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-lines"), country, svgWidth, svgHeight)
-          makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-stroke"), populists, padding, padding);
-        }
-        else
-        {
-          svgWidth = 200;
-
-          d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/3) + "px, 30px)")
-
-          d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg").attr("width", svgWidth + padding)
-
-          makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-fill"), populists, padding, padding);
-          makeLines( d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-lines"), country, 200, svgHeight)
-          makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-stroke"), populists, padding, padding);
-        }
+        makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-fill"), populists, padding, padding);
+        makeLines( d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-lines"), country, svgWidth, svgHeight)
+        makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-stroke"), populists, padding, padding);
       }
-      
-    })
+      else
+      {
+        svgWidth = w;
+
+        d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/3) + "px, 30px)")
+
+        d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg").attr("width", svgWidth + padding)
+
+        makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-fill"), populists, padding, padding);
+        makeLines( d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-lines"), country, svgWidth, svgHeight)
+        makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-stroke"), populists, padding, padding);
+      }
+    }
+
+  })
 }
 
 function makeLines(areaGroupLines, country, width, height)
@@ -232,28 +229,28 @@ function makeLines(areaGroupLines, country, width, height)
 
   for (var i = 0; i<=7; i++) {
 
-        areaGroupLines.append("line")
-        .attr("class", "chart-dotted-line l" + i)
-        .attr("x1", 0 )
-        .attr("y1", i* ((height - padding) / 7) + padding)
-        .attr("x2", width)
-        .attr("y2", i* ((height - padding) / 7) + padding);
+    areaGroupLines.append("line")
+    .attr("class", "chart-dotted-line l" + i)
+    .attr("x1", 0 )
+    .attr("y1", i* ((height - padding) / 7) + padding)
+    .attr("x2", width)
+    .attr("y2", i* ((height - padding) / 7) + padding);
 
-        if(country == "Austria")
-        {
-          if(i > 1 && i%2 == 1)areaGroupLines.append("text").html(70 - (i * 10)).attr("transform", "translate("+ (width + 5) + "," + (i * ((height - padding) / 7) + padding) + ")")
-            else if(i == 1)areaGroupLines.append("text").html(70 - (i * 10) + "%").attr("transform", "translate("+ (width + 5) + "," + (i * ((height - padding) / 7) + padding) + ")")
-        }
-        
+    if(country == "Austria")
+    {
+      if(i > 1 && i%2 == 1)areaGroupLines.append("text").html(70 - (i * 10)).attr("transform", "translate("+ (width + 5) + "," + (i * ((height - padding) / 7) + padding) + ")")
+        else if(i == 1)areaGroupLines.append("text").html(70 - (i * 10) + "%").attr("transform", "translate("+ (width + 5) + "," + (i * ((height - padding) / 7) + padding) + ")")
       }
 
-      for (var i = 0; i<=2; i++) {
+  }
 
-        areaGroupLines.append("line")
-        .attr("class", "chart-dotted-line")
-        .attr("x1", i* (width / 2) )
-        .attr("y1", 0)
-        .attr("x2", i* (width / 2))
-        .attr("y2", height);
-      }
+  for (var i = 0; i<=2; i++) {
+
+    areaGroupLines.append("line")
+    .attr("class", "chart-dotted-line")
+    .attr("x1", i* (width / 2) )
+    .attr("y1", 0)
+    .attr("x2", i* (width / 2))
+    .attr("y2", height);
+  }
 }

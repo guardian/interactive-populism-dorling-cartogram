@@ -82,7 +82,7 @@ body{background: #F4F0EF;}
 
 .chart-wrapper svg{
     padding: 0;
-    margin: 0;
+    margin-right: 5px;
 }
 
 .chart-wrapper .rightLine{
@@ -100,7 +100,9 @@ body{background: #F4F0EF;}
 
 .chart-wrapper h3{
     color:black;
-    position:absolute;
+    margin-bottom:-20px;
+    font-size: 16px;
+
 }
 
 .chart-dotted-line{
