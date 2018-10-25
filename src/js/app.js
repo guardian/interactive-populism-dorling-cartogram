@@ -163,6 +163,7 @@ function ready(elections){
 
 function resize()
 {
+  
   isMobile = window.matchMedia('(max-width: 620px)').matches;
 
 
