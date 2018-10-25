@@ -213,3 +213,18 @@ rect[data-popgov="false"] {
     stroke-width: 2;
 }
 
+.area-group-annotation .line{
+    stroke:black;
+    stroke-width:1px;
+    fill:none;
+}
+
+.area-group-annotation .arrow{
+    fill:black;
+}
+
+.area-group-annotation text{
+    fill:black;
+    font-family: "Guardian Headline","Guardian Headline Full","Guardian Egyptian Web",Georgia,serif;
+    font-size: 12px;
+}
