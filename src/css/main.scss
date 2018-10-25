@@ -24,10 +24,6 @@
 
 body{background: #F4F0EF;}
 
-
-.map-wrapper svg{position:relative; float:right; }
-
-
 .gv-title__line {
     position: relative;
     z-index: 5;
@@ -44,27 +40,6 @@ body{background: #F4F0EF;}
     max-width: 400px;
     color: $highlight-yellow;
 
-}
-
-#wing-hatch{
-    stroke: $highlight-yellow;
-    stroke-width: 2;
-}
-
-#wing-hatch--rightshare {
-    stroke: $highlight-yellow;
-    stroke-width: 2;
-    //fill:#506697;
-}
-
-#wing-hatch--leftshare {
-    stroke: $highlight-yellow;
-    stroke-width: 2;
-}
-
-#wing-hatch--othershare {
-    stroke: $highlight-yellow;
-    stroke-width: 2;
 }
 
 .area-group-fill .area.rightshare{
@@ -98,19 +73,12 @@ body{background: #F4F0EF;}
 .charts-wrapper{
     position:relative;
     float:left;
-
-    @include mq(wide) {
-       max-width:1260px; 
-    }
 }
 
 .chart-wrapper{
-    stroke-width:2.5px;
-    stroke-linecap:round;
-    position: relative;
-    float: left;
-    margin-right:12px;
-    margin-bottom:12px;
+    margin-left:-7px;
+    position:relative;
+    float:left;
 }
 
 .chart-wrapper svg{
@@ -137,10 +105,10 @@ body{background: #F4F0EF;}
 }
 
 .chart-dotted-line{
-    stroke-dasharray: 0 2.5;
+    stroke-dasharray: 0 4;
     stroke: #F4F0EF;
     stroke-width: 1px;
-    stroke-linecap:"round";
+    stroke-linecap:round ;
 }
 
 .chart-dotted-line.l7{
@@ -148,47 +116,10 @@ body{background: #F4F0EF;}
     stroke-dasharray: none;
 }
 
-rect {
-    fill: $neutral-20;
-}
 
-text {
+.area-group-lines text {
     @include fs-textSans(1);
     font-size: 12px;
-    fill: #d5d5d5;
-}
-text.year {
-    font-size: 24px;
-    font-weight: 700;
-    fill: #555;
-}
-
-/* .area{
-   stroke-width:1px;
-   stroke: $neutral-20;
-} */
-
-.annotations-text tspan{font-family:'Guardian Text Sans Web', Arial, sans-serif; font-size:14px;}
-.tspanYellow{color: $highlight-yellow;}
-
-#arrow path{fill:white}
-
-.cartogram-wrapper{
-    position:relative;
-    float:left;
-}
-.area-charts-wrapper .chart-wrapper{
-    padding:0;
-    margin:0;
-}
-.area-charts-wrapper{
-    //width:100%;
-}
-.area-charts-wrapper .chart-wrapper{
-   width:auto;
-}
-
-.area-group-lines text{
     font-family: "Guardian Headline","Guardian Headline Full","Guardian Egyptian Web",Georgia,serif;
     fill: black;
 }

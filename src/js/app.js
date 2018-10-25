@@ -127,11 +127,19 @@ function ready(elections){
         .append("text")
         .attr("class", "text")
         .attr("transform", "translate(40,10)")
-        .html("Populism reaches the government");
+        .attr("width", "50px")
+        .html("Populism reaches");
+
+        areaGroupAnnotations
+        .append("text")
+        .attr("class", "text")
+        .attr("transform", "translate(40,25)")
+        .attr("width", "50px")
+        .html("the goverment");
+
 
         if(isMobile)
         {
-
           svgWidth = window.innerWidth - padding;
 
           d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/2) + "px, 10px)")
@@ -140,7 +148,7 @@ function ready(elections){
         {
           svgWidth = 200;
 
-          d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/3) + "px, 10px)")
+          d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/3) + "px, 0px)")
         }
       }
       
@@ -185,7 +193,7 @@ function resize()
         {
           svgWidth = 200;
 
-          d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/3) + "px, 10px)")
+          d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/3) + "px, 0px)")
 
           d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg").attr("width", svgWidth + padding)
 
@@ -194,16 +202,6 @@ function resize()
           makeStacked(200 - padding, svgHeight - padding, [1992,2018], [0,70], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-stroke"), populists, padding, padding);
         }
       }
-
-      if(isMobile)
-        {
-          
-        }
-        else{
-          
-        }
-      
-
       
     })
 }
@@ -232,8 +230,8 @@ function makeLines(areaGroupLines, country, width, height)
 
         if(country == "Austria")
         {
-          if(i > 1)areaGroupLines.append("text").html(70 - (i * 10)).attr("transform", "translate("+ (width + 5) + "," + ((i * (height / 7))) + ")")
-            else if(i == 1)areaGroupLines.append("text").html(70 - (i * 10) + "%").attr("transform", "translate("+ (width + 5) + "," + ((i * (height / 7))) + ")")
+          if(i > 1)areaGroupLines.append("text").html(70 - (i * 10)).attr("transform", "translate("+ (width + 5) + "," + (i * ((height - padding) / 7) + padding) + ")")
+            else if(i == 1)areaGroupLines.append("text").html(70 - (i * 10) + "%").attr("transform", "translate("+ (width + 5) + "," + (i * ((height - padding) / 7) + padding) + ")")
         }
         
       }
