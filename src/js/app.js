@@ -241,7 +241,7 @@ function makeLines(areaGroupLines, country, width, height)
 
         if(country == "Austria")
         {
-          if(i > 1)areaGroupLines.append("text").html(70 - (i * 10)).attr("transform", "translate("+ (width + 5) + "," + (i * ((height - padding) / 7) + padding) + ")")
+          if(i > 1 && i%2 == 1)areaGroupLines.append("text").html(70 - (i * 10)).attr("transform", "translate("+ (width + 5) + "," + (i * ((height - padding) / 7) + padding) + ")")
             else if(i == 1)areaGroupLines.append("text").html(70 - (i * 10) + "%").attr("transform", "translate("+ (width + 5) + "," + (i * ((height - padding) / 7) + padding) + ")")
         }
         
