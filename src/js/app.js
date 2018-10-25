@@ -115,40 +115,50 @@ function ready(elections){
 
         areaGroupAnnotations
         .append("path")
-        .attr("d","M2.378,35.495C4.158,19.499,17.705,7.081,34.18,7.081")
+        .attr("d","M25.5,0.5c-14,0-25,11-25,25")
         .attr("class", "line")
+        .style("transform", "translate(13px, 4px)");
 
         areaGroupAnnotations
         .append("path")
         .attr("class", "arrow")
-        .attr("d","M4.974,34.952 2.18,39.081 0,34.597");
+        .attr("d","M0,0 3,6.4 7,0.6")
+        .style("transform", "translate(10px, 28px)");
+
 
         areaGroupAnnotations
         .append("text")
         .attr("class", "text")
         .attr("transform", "translate(40,10)")
         .attr("width", "50px")
-        .html("Populism reaches");
+        .html("Populism");
 
         areaGroupAnnotations
         .append("text")
         .attr("class", "text")
         .attr("transform", "translate(40,25)")
         .attr("width", "50px")
-        .html("the goverment");
+        .html("reaches");
+
+        areaGroupAnnotations
+        .append("text")
+        .attr("class", "text")
+        .attr("transform", "translate(40,40)")
+        .attr("width", "50px")
+        .html("goverment");
 
 
         if(isMobile)
         {
           svgWidth = window.innerWidth - padding;
 
-          d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/2) + "px, 10px)")
+          d3.select(".area-group-annotation").style("transform", "translate(" + ((svgWidth/2) - 10 )+ "px, 30px)")
         }
         else
         {
           svgWidth = 200;
 
-          d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/3) + "px, 0px)")
+          d3.select(".area-group-annotation").style("transform", "translate(69px, 30px)")
         }
       }
       
@@ -182,7 +192,7 @@ function resize()
 
           svgWidth = window.innerWidth - padding;
 
-          d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/2 ) + "px, 10px)")
+          d3.select(".area-group-annotation").style("transform", "translate(" + ((svgWidth/2) - 10 ) + "px, 30px)")
 
           d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg").attr("width", svgWidth + padding)
 
@@ -194,7 +204,7 @@ function resize()
         {
           svgWidth = 200;
 
-          d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/3) + "px, 0px)")
+          d3.select(".area-group-annotation").style("transform", "translate(" + (svgWidth/3) + "px, 30px)")
 
           d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg").attr("width", svgWidth + padding)
 
