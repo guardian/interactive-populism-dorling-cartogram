@@ -116,10 +116,10 @@ function ready(elections){
       let areaGroupLines = areaGroup.append('g').attr("class", "area-group-lines");
       let areaGroupStroke = areaGroup.append('g').attr("class", "area-group-stroke");
 
-      makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countryDataArea, areaGroupShade, populists);
-      makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countryDataArea, areaGroupFill, populists);
-      makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countryDataArea, areaGroupLines, populists)
-      makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countryDataArea, areaGroupStroke, populists)
+      makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countryDataArea, areaGroupShade, populists);
+      makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countryDataArea, areaGroupFill, populists);
+      makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countryDataArea, areaGroupLines, populists)
+      makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countryDataArea, areaGroupStroke, populists)
       
 
       if(countryName == "Austria")
@@ -174,7 +174,9 @@ function ready(elections){
     }
 
   })
-  
+
+
+
   window.addEventListener("resize", resize, false);
 }
 
@@ -201,10 +203,10 @@ function resize()
 
         svgWidth = window.innerWidth - padding - 10;
 
-        makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-shade"), populists);
-        makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-fill"), populists);
-        makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-lines"), populists)
-        makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-stroke"), populists)
+        makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-shade"), populists);
+        makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-fill"), populists);
+        makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-lines"), populists)
+        makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-stroke"), populists)
 
       }
       else
@@ -212,10 +214,10 @@ function resize()
         svgWidth = w;
 
 
-        makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-shade"), populists);
-        makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-fill"), populists);
-        makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-lines"), populists)
-        makeStacked(svgWidth - padding, svgHeight, [new Date(1997, 11, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-stroke"), populists)
+        makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-shade"), populists);
+        makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-fill"), populists);
+        makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-lines"), populists)
+        makeStacked(svgWidth - padding, svgHeight, [new Date(1998, 0, 1), new Date(2018, 11, 30)], [0,80], countriesData[g.country], d3.select(".countries-wrapper." + countryGroup + " .chart-wrapper." + country + " svg .area-group-stroke"), populists)
       }
     }
 

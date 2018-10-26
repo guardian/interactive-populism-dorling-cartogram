@@ -11,7 +11,7 @@ function makeStacked(rectWidth, rectHeight, domainX, domainY, data, group, popul
   .range([rectHeight, 0]).domain(domainY);
 
   let area = d3.area()
-  .curve(d3.curveStepBefore)
+  .curve(d3.curveStep)
   .x(function(d) { return x(d.data.date)})
   .y0(function(d) { return y(d[0]); })
   .y1(function(d) { return y(d[1]); })
