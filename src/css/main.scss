@@ -10,6 +10,8 @@
     margin: 0 !important;
 }
 
+body{background: #F4F0EF;}
+
 .maps-wrapper{
     float:left;
     position:relative;
@@ -20,26 +22,6 @@
     position: relative;
     float: left;
     padding:6px
-}
-
-body{background: #F4F0EF;}
-
-.gv-title__line {
-    position: relative;
-    z-index: 5;
-    padding-left: 10px;
-    margin-top: 0px;
-    font-size: 16px;
-    line-height: 20px;
-    font-family: "Guardian Headline","Guardian Headline Full","Guardian Egyptian Web",Georgia,serif;
-    font-weight: bold;
-    font-size: 35px;
-    line-height: 44px;
-    padding-bottom: 24px;
-    margin-left: -1px;
-    max-width: 400px;
-    color: $highlight-yellow;
-
 }
 
 .area-group-fill .area.rightshare{
@@ -80,29 +62,9 @@ body{background: #F4F0EF;}
     float:left;
 }
 
-.chart-wrapper svg{
-    padding: 0;
-    margin-right: 5px;
-}
-
-.chart-wrapper .rightLine{
-    stroke: $sport-blue;
-}
-.chart-wrapper .leftLine{
-    stroke: $live-red;
-}
-.chart-wrapper .otherLine{
-    stroke: grey;
-}
-.chart-wrapper .accumLine{
-    stroke: $highlight-yellow;
-}
-
 .chart-wrapper h3{
     color:black;
-    margin-bottom:-20px;
     font-size: 16px;
-
 }
 
 .chart-dotted-line{
@@ -112,37 +74,21 @@ body{background: #F4F0EF;}
     stroke-linecap:round ;
 }
 
-.chart-dotted-line.l7{
+.chart-dotted-line.last{
     stroke: #000;
     stroke-dasharray: none;
 }
 
-
 .area-group-lines text {
-    @include fs-textSans(1);
     font-size: 12px;
     font-family: "Guardian Headline","Guardian Headline Full","Guardian Egyptian Web",Georgia,serif;
     fill: black;
 }
+
 .countries-wrapper{
     width:100%;
     float:left;
     position:relative;
-}
-
-rect[data-popgov="true"] {
-    fill: grey;
-    stroke: none;
-    z-index:-100;
-}
-
-rect[data-popgov="false"] {
-    fill: none;
-}
-
-#wing-hatch{
-    stroke: $highlight-yellow;
-    stroke-width: 2;
 }
 
 .area-group-annotation .line{
