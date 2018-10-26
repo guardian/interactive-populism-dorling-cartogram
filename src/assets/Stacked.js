@@ -21,7 +21,7 @@ function makeStacked(rectWidth, rectHeight, domainX, domainY, data, group, popul
 
   let stack = d3.stack()
   .keys(populists)
-  .offset(d3.stackOffsetNone);
+  //.offset(d3.stackOffsetNone);
 
    group.selectAll('g').remove()
    group.selectAll('defs').remove()
@@ -38,14 +38,20 @@ function makeStacked(rectWidth, rectHeight, domainX, domainY, data, group, popul
     group.append('g').selectAll(".shade")
     .data(data)
     .enter().append("rect")
-    .filter(d => d.cabinet)
-    .attr("class", "shade")
+    .filter(d => d.cabinet && d.date.getFullYear() < 2018)
+    .attr("class", d=> "shade y" + d.date.getFullYear())
     .attr("x", function (d) {
-      return x(d.date.getFullYear());
+
+
+        return x(d.date.getFullYear());
+      
+      
     })
-    .attr("width", rectWidth / 26)
+    .attr("width", (rectWidth / 27)+1)
     .attr("y", marginY)
     .attr("height",rectHeight)
+    /*.attr("stroke", "black")
+    .attr("fill", "none")*/
     .style("fill", t.url());
   }
 
@@ -59,6 +65,6 @@ function makeStacked(rectWidth, rectHeight, domainX, domainY, data, group, popul
   .append("path")
   .attr("d", area)
   .attr('class', function(d) { return "area " + d.key; })
-  .attr("transform", "translate("+ marginX + "," + marginY + ")")
+  .attr("transform", "translate("+ 0 + "," + marginY + ")")
 }
 export { makeStacked }

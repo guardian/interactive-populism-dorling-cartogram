@@ -106,9 +106,9 @@ function ready(elections){
       let areaGroupLines = areaGroup.append('g').attr("class", "area-group-lines");
       let areaGroupStroke = areaGroup.append('g').attr("class", "area-group-stroke");
 
-      makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countryDataArea, areaGroupFill, populists, padding, padding);
+      makeStacked(svgWidth, svgHeight - padding, [1992,2018], [0,70], countryDataArea, areaGroupFill, populists, padding, padding);
       makeLines(areaGroupLines, countryName, svgWidth, svgHeight)
-      makeStacked(svgWidth - padding, svgHeight - padding, [1992,2018], [0,70], countryDataArea, areaGroupStroke, populists, padding, padding);
+      makeStacked(svgWidth, svgHeight - padding, [1992,2018], [0,70], countryDataArea, areaGroupStroke, populists, padding, padding);
 
       if(countryName == "Austria")
       {
@@ -224,7 +224,7 @@ function makeLines(areaGroupLines, country, width, height)
   let year3 = areaGroupLines.append("text").html("2018");
 
   year1.attr("transform", "translate("+ 0 + "," + (height + 15) + ")")
-  year2.attr("transform", "translate("+ ((width / 2) - (year2.node().getComputedTextLength() / 2)) + "," + (height + 15) + ")")
+  year2.attr("transform", "translate("+ (((width - padding) / 2) - (year2.node().getComputedTextLength() / 2)) + "," + (height + 15) + ")")
   year3.attr("transform", "translate("+ (width - year1.node().getComputedTextLength()) + "," + (height + 15) + ")")
 
   for (var i = 0; i<=7; i++) {
@@ -248,9 +248,9 @@ function makeLines(areaGroupLines, country, width, height)
 
     areaGroupLines.append("line")
     .attr("class", "chart-dotted-line")
-    .attr("x1", i* (width / 2) )
+    .attr("x1", i * ((width - padding) / 2) )
     .attr("y1", 0)
-    .attr("x2", i* (width / 2))
+    .attr("x2", i* ((width - padding) / 2))
     .attr("y2", height);
   }
 }
